@@ -1,0 +1,167 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { getProductBySlug, products } from "@/lib/products";
+import { formatBRL, installmentPrice, availabilityLabel } from "@/lib/format";
+import { ProductMedia } from "@/components/ProductMedia";
+import { ProductCard } from "@/components/ProductCard";
+import { AddToCartButton } from "@/components/AddToCartButton";
+import { siteConfig } from "@/lib/site-config";
+
+const GOOGLE_AVAILABILITY: Record<string, string> = {
+  in_stock: "https://schema.org/InStock",
+  out_of_stock: "https://schema.org/OutOfStock",
+  preorder: "https://schema.org/PreOrder",
+};
+
+export function generateStaticParams() {
+  return products.map((product) => ({ slug: product.slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const product = getProductBySlug(params.slug);
+  if (!product) return {};
+  return {
+    title: `${product.name} | ${siteConfig.brandName}`,
+    description: product.shortDescription,
+  };
+}
+
+export default function ProductPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const product = getProductBySlug(params.slug);
+  if (!product) notFound();
+
+  const related = products
+    .filter((p) => p.slug !== product.slug)
+    .slice(0, 4);
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://julilarmoveis.com";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    sku: product.sku,
+    url: `${siteUrl}/produtos/${product.slug}`,
+    brand: {
+      "@type": "Brand",
+      name: siteConfig.brandName,
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${siteUrl}/produtos/${product.slug}`,
+      priceCurrency: "BRL",
+      price: product.price.toFixed(2),
+      availability: GOOGLE_AVAILABILITY[product.availability] ?? "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+  };
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-12">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <nav className="mb-6 text-xs text-text-muted">
+        <Link href="/" className="hover:text-ink">
+          Início
+        </Link>{" "}
+        / <span className="text-ink">{product.name}</span>
+      </nav>
+
+      <div className="grid gap-10 sm:grid-cols-2">
+        <div className={product.image ? "aspect-square overflow-hidden rounded-xl2 bg-white shadow-card" : "rounded-xl2 bg-white p-8 shadow-card"}>
+          <ProductMedia product={product} className="h-full w-full" />
+        </div>
+
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-ink sm:text-3xl">
+            {product.name}
+          </h1>
+          <p className="mt-2 text-sm text-text-muted">
+            {product.shortDescription}
+          </p>
+          <p className="mt-3 flex items-center gap-1.5 text-sm font-medium text-emerald-700">
+            <span className="h-2 w-2 rounded-full bg-emerald-600" aria-hidden />
+            {availabilityLabel(product.availability)}
+          </p>
+
+          <div className="mt-6">
+            <p className="font-heading text-3xl font-extrabold text-ink">
+              {formatBRL(product.price)}
+            </p>
+            <p className="text-sm text-text-muted">
+              ou {product.installments}x de{" "}
+              {installmentPrice(product.price, product.installments)} sem
+              juros no cartão
+            </p>
+          </div>
+
+          <div className="mt-6">
+            <AddToCartButton product={product} />
+          </div>
+
+          <div className="mt-8 space-y-2 text-sm text-text-muted">
+            <p>✓ Frete para todo o Brasil</p>
+            <p>✓ Nota fiscal eletrônica em todos os pedidos</p>
+            <p>
+              ✓ {siteConfig.returnDays} dias para troca ou devolução
+            </p>
+            <p>✓ {siteConfig.warrantyDays} dias de garantia de fábrica</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-12 grid gap-10 sm:grid-cols-2">
+        <div>
+          <h2 className="font-heading text-lg font-semibold text-ink">
+            Descrição
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-text-muted">
+            {product.description}
+          </p>
+        </div>
+        <div>
+          <h2 className="font-heading text-lg font-semibold text-ink">
+            Características
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm text-text-muted">
+            {product.features.map((feature) => (
+              <li key={feature}>• {feature}</li>
+            ))}
+          </ul>
+          <div className="mt-4 text-sm text-text-muted">
+            <p>
+              <span className="font-semibold text-ink">Dimensões: </span>
+              {product.dimensions}
+            </p>
+            <p>
+              <span className="font-semibold text-ink">Material: </span>
+              {product.material}
+            </p>
+            <p>
+              <span className="font-semibold text-ink">Código do produto: </span>
+              {product.sku}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-16">
+        <h2 className="font-heading text-xl font-bold text-ink">
+          Você também pode gostar
+        </h2>
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {related.map((p) => (
+            <ProductCard key={p.slug} product={p} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
