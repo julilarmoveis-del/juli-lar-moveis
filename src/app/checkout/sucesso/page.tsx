@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 
 export default function CheckoutSucessoPage() {
+  return (
+    <Suspense fallback={null}>
+      <CheckoutSucessoContent />
+    </Suspense>
+  );
+}
+
+function CheckoutSucessoContent() {
   const { clearCart } = useCart();
   const params = useSearchParams();
   const isDemo = params.get("demo") === "1";
