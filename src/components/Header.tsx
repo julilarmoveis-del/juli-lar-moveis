@@ -23,8 +23,8 @@ export function Header() {
           <Image
             src="/logo.png"
             alt="JuliLar Ofertas"
-            width={1550}
-            height={920}
+            width={505}
+            height={300}
             priority
             className="h-12 w-auto object-contain sm:h-14"
           />
