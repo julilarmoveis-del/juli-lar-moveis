@@ -177,6 +177,28 @@ export const products: Product[] = [
     sku: "JL-KBI-108",
     image: "https://http2.mlstatic.com/D_Q_NP_2X_882559-MLA110688376874_052026-E.webp",
   },
+  {
+        slug: "sapateira-slim-basculante-3-compartimentos",
+        name: "Sapateira Slim Basculante 3 Compartimentos",
+        shortDescription:
+                "Sapateira suspensa slim com 3 compartimentos basculantes para até 12 pares.",
+        description:
+                "Organize até 12 pares de sapatos sem tirar nem um centímetro de espaço da sua casa. Com apenas 16 cm de profundidade fechada, essa sapateira suspensa é a solução perfeita para halls de entrada, corredores estreitos e atrás da porta — lugares onde um móvel tradicional simplesmente não cabe. Os 3 compartimentos basculantes abrem com um gesto simples, revelando todos os pares de uma vez, sem precisar empilhar ou remexer. As dobradiças ficam escondidas por dentro, deixando a frente lisa e sem puxadores à vista — um visual limpo que combina com qualquer decoração. Fabricada em MDP branco, a peça já vem montada de fábrica: é só fixar na parede (buchas e parafusos para alvenaria inclusos) e guardar os calçados.",
+features: [
+  "3 compartimentos basculantes — até 12 pares (4 por gaveta)",
+  "Dobradiças internas em polímero, sem puxadores aparentes",
+  "Vem montada de fábrica — só fixar na parede (buchas e parafusos inclusos)",
+  "Suporta até 6,5 kg por gaveta",
+],        
+    price: 167.9,
+    installments: 5,
+    category: "organizadores",
+    accent: "#B47A4F",
+    dimensions: "81cm (L) x 98cm (A) x 16cm (P)",
+    material: "MDP",
+    availability: "in_stock",
+    sku: "JL-SSB-109",
+  },
 ];
 
 export function getProductBySlug(slug: string): Product | undefined {
