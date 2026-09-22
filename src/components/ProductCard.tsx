@@ -9,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
       href={`/produtos/${product.slug}`}
       className="group flex flex-col overflow-hidden rounded-xl2 bg-white shadow-card transition hover:shadow-cardHover"
     >
-      <div className={product.image ? "aspect-square" : "aspect-square p-6"}>
+      <div className="aspect-square">
         <ProductMedia product={product} className="h-full w-full" />
       </div>
       <div className="flex flex-1 flex-col gap-2 border-t border-sand-dark p-5">

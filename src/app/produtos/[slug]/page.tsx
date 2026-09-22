@@ -12,6 +12,7 @@ const GOOGLE_AVAILABILITY: Record<string, string> = {
   out_of_stock: "https://schema.org/OutOfStock",
   preorder: "https://schema.org/PreOrder",
 };
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://julilarmoveis.com";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -23,6 +24,9 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   return {
     title: `${product.name} | ${siteConfig.brandName}`,
     description: product.shortDescription,
+    openGraph: {
+      images: [`${siteUrl}${product.image}`],
+    },
   };
 }
 
@@ -38,12 +42,12 @@ export default function ProductPage({
     .filter((p) => p.slug !== product.slug)
     .slice(0, 4);
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://julilarmoveis.com";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.description,
+    image: `${siteUrl}${product.image}`,
     sku: product.sku,
     url: `${siteUrl}/produtos/${product.slug}`,
     brand: {
@@ -75,7 +79,7 @@ export default function ProductPage({
       </nav>
 
       <div className="grid gap-10 sm:grid-cols-2">
-        <div className={product.image ? "aspect-square overflow-hidden rounded-xl2 bg-white shadow-card" : "rounded-xl2 bg-white p-8 shadow-card"}>
+        <div className="aspect-square overflow-hidden rounded-xl2 bg-white shadow-card">
           <ProductMedia product={product} className="h-full w-full" />
         </div>
 

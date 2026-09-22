@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { formatBRL } from "@/lib/format";
-import { ProductIllustration } from "@/components/ProductIllustration";
+import { getProductBySlug } from "@/lib/products";
+import { ProductMedia } from "@/components/ProductMedia";
 
 export default function CarrinhoPage() {
   const { items, updateQuantity, removeItem, totalPrice } = useCart();
@@ -34,55 +35,63 @@ export default function CarrinhoPage() {
       </h1>
 
       <div className="mt-6 space-y-4">
-        {items.map((item) => (
-          <div
-            key={item.slug}
-            className="flex items-center gap-4 rounded-xl2 bg-white p-4 shadow-card"
-          >
-            <div className="h-20 w-20 shrink-0">
-              <ProductIllustration accent={item.accent} className="h-full w-full" />
-            </div>
-            <div className="flex-1">
-              <Link
-                href={`/produtos/${item.slug}`}
-                className="font-heading text-sm font-semibold text-ink hover:underline"
-              >
-                {item.name}
-              </Link>
-              <p className="mt-1 text-sm text-text-muted">
-                {formatBRL(item.price)} cada
-              </p>
-              <div className="mt-2 flex items-center gap-2">
-                <button
-                  onClick={() => updateQuantity(item.slug, item.quantity - 1)}
-                  className="h-7 w-7 rounded-full bg-sand-dark text-sm font-bold text-ink"
-                  aria-label="Diminuir quantidade"
+        {items.map((item) => {
+          const product = getProductBySlug(item.slug);
+
+          return (
+            <div
+              key={item.slug}
+              className="flex items-center gap-4 rounded-xl2 bg-white p-4 shadow-card"
+            >
+              <div className="h-20 w-20 shrink-0">
+                {product ? (
+                  <ProductMedia product={product} className="h-full w-full" />
+                ) : null}
+              </div>
+              <div className="flex-1">
+                <Link
+                  href={`/produtos/${item.slug}`}
+                  className="font-heading text-sm font-semibold text-ink hover:underline"
                 >
-                  −
-                </button>
-                <span className="w-6 text-center text-sm">{item.quantity}</span>
+                  {item.name}
+                </Link>
+                <p className="mt-1 text-sm text-text-muted">
+                  {formatBRL(item.price)} cada
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <button
+                    onClick={() => updateQuantity(item.slug, item.quantity - 1)}
+                    className="h-7 w-7 rounded-full bg-sand-dark text-sm font-bold text-ink"
+                    aria-label="Diminuir quantidade"
+                  >
+                    −
+                  </button>
+                  <span className="w-6 text-center text-sm">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => updateQuantity(item.slug, item.quantity + 1)}
+                    className="h-7 w-7 rounded-full bg-sand-dark text-sm font-bold text-ink"
+                    aria-label="Aumentar quantidade"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-heading text-sm font-semibold text-ink">
+                  {formatBRL(item.price * item.quantity)}
+                </p>
                 <button
-                  onClick={() => updateQuantity(item.slug, item.quantity + 1)}
-                  className="h-7 w-7 rounded-full bg-sand-dark text-sm font-bold text-ink"
-                  aria-label="Aumentar quantidade"
+                  onClick={() => removeItem(item.slug)}
+                  className="mt-2 text-xs text-text-muted underline hover:text-brand-dark"
                 >
-                  +
+                  Remover
                 </button>
               </div>
             </div>
-            <div className="text-right">
-              <p className="font-heading text-sm font-semibold text-ink">
-                {formatBRL(item.price * item.quantity)}
-              </p>
-              <button
-                onClick={() => removeItem(item.slug)}
-                className="mt-2 text-xs text-text-muted underline hover:text-brand-dark"
-              >
-                Remover
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-8 flex flex-col items-end gap-4 rounded-xl2 bg-white p-6 shadow-card">

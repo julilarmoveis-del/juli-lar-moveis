@@ -21,7 +21,7 @@ export const products: Product[] = [
     material: "Componentes plásticos e aditivos",
     availability: "in_stock",
     sku: "JL-SMD-101",
-    image: "https://http2.mlstatic.com/D_Q_NP_2X_927707-MLA106705394102_022026-E.webp",
+    image: "/produtos/sapateira-multiuso-desmontavel-ref-12225.webp",
   },
   {
     slug: "rack-baixo-tv-retro-2-nichos",
@@ -43,7 +43,7 @@ export const products: Product[] = [
     material: "MDP com pintura UV",
     availability: "in_stock",
     sku: "JL-RTV-102",
-    image: "https://http2.mlstatic.com/D_NQ_NP_795758-MLA114640211047_072026-O.webp",
+    image: "/produtos/rack-baixo-tv-retro-2-nichos.webp",
   },
   {
     slug: "estante-biblioteca-modular-5-prateleiras",
@@ -65,7 +65,7 @@ export const products: Product[] = [
     material: "MDP com pintura UV",
     availability: "in_stock",
     sku: "JL-EBM-103",
-    image: "https://http2.mlstatic.com/D_Q_NP_2X_760353-MLA106197430249_012026-E.webp",
+    image: "/produtos/estante-biblioteca-modular-5-prateleiras.webp",
   },
   {
     slug: "comoda-4-gavetas-nature",
@@ -87,7 +87,7 @@ export const products: Product[] = [
     material: "MDP com acabamento UV",
     availability: "in_stock",
     sku: "JL-CGN-104",
-    image: "https://http2.mlstatic.com/D_Q_NP_2X_714957-MLA99990526291_112025-E.webp",
+    image: "/produtos/comoda-4-gavetas-nature.webp",
   },
   {
     slug: "carrinho-organizador-cozinha-aco-carbono",
@@ -109,7 +109,7 @@ export const products: Product[] = [
     material: "Aço carbono",
     availability: "in_stock",
     sku: "JL-COA-105",
-    image: "https://http2.mlstatic.com/D_Q_NP_2X_993734-MLA99368316940_112025-E.webp",
+    image: "/produtos/carrinho-organizador-cozinha-aco-carbono.webp",
   },
   {
     slug: "armario-multiuso-lavanderia-texas",
@@ -131,7 +131,7 @@ export const products: Product[] = [
     material: "MDP",
     availability: "in_stock",
     sku: "JL-AML-106",
-    image: "https://http2.mlstatic.com/D_Q_NP_2X_722505-MLA109028278355_032026-E.webp",
+    image: "/produtos/armario-multiuso-lavanderia-texas.webp",
   },
   {
     slug: "plafon-led-redondo-3-tons-36w",
@@ -153,7 +153,7 @@ export const products: Product[] = [
     material: "Metal e acrílico",
     availability: "in_stock",
     sku: "JL-PLR-107",
-    image: "https://http2.mlstatic.com/D_Q_NP_2X_644225-MLA113049802635_062026-E.webp",
+    image: "/produtos/plafon-led-redondo-3-tons-36w.webp",
   },
   {
     slug: "kit-acessorios-banheiro-inox-polido",
@@ -175,21 +175,21 @@ export const products: Product[] = [
     material: "Aço inoxidável",
     availability: "in_stock",
     sku: "JL-KBI-108",
-    image: "https://http2.mlstatic.com/D_Q_NP_2X_882559-MLA110688376874_052026-E.webp",
+    image: "/produtos/kit-acessorios-banheiro-inox-polido.webp",
   },
   {
-        slug: "sapateira-slim-basculante-3-compartimentos",
-        name: "Sapateira Slim Basculante 3 Compartimentos",
-        shortDescription:
-                "Sapateira suspensa slim com 3 compartimentos basculantes para até 12 pares.",
-        description:
-                "Organize até 12 pares de sapatos sem tirar nem um centímetro de espaço da sua casa. Com apenas 16 cm de profundidade fechada, essa sapateira suspensa é a solução perfeita para halls de entrada, corredores estreitos e atrás da porta — lugares onde um móvel tradicional simplesmente não cabe. Os 3 compartimentos basculantes abrem com um gesto simples, revelando todos os pares de uma vez, sem precisar empilhar ou remexer. As dobradiças ficam escondidas por dentro, deixando a frente lisa e sem puxadores à vista — um visual limpo que combina com qualquer decoração. Fabricada em MDP branco, a peça já vem montada de fábrica: é só fixar na parede (buchas e parafusos para alvenaria inclusos) e guardar os calçados.",
-features: [
-  "3 compartimentos basculantes — até 12 pares (4 por gaveta)",
-  "Dobradiças internas em polímero, sem puxadores aparentes",
-  "Vem montada de fábrica — só fixar na parede (buchas e parafusos inclusos)",
-  "Suporta até 6,5 kg por gaveta",
-],        
+    slug: "sapateira-slim-basculante-3-compartimentos",
+    name: "Sapateira Slim Basculante 3 Compartimentos",
+    shortDescription:
+      "Sapateira suspensa slim com 3 compartimentos basculantes para até 12 pares.",
+    description:
+      "Organize até 12 pares de sapatos sem tirar nem um centímetro de espaço da sua casa. Com apenas 16 cm de profundidade fechada, essa sapateira suspensa é a solução perfeita para halls de entrada, corredores estreitos e atrás da porta — lugares onde um móvel tradicional simplesmente não cabe. Os 3 compartimentos basculantes abrem com um gesto simples, revelando todos os pares de uma vez, sem precisar empilhar ou remexer. As dobradiças ficam escondidas por dentro, deixando a frente lisa e sem puxadores à vista — um visual limpo que combina com qualquer decoração. Fabricada em MDP branco, a peça já vem montada de fábrica: é só fixar na parede (buchas e parafusos para alvenaria inclusos) e guardar os calçados.",
+    features: [
+      "3 compartimentos basculantes — até 12 pares (4 por gaveta)",
+      "Dobradiças internas em polímero, sem puxadores aparentes",
+      "Vem montada de fábrica — só fixar na parede (buchas e parafusos inclusos)",
+      "Suporta até 6,5 kg por gaveta",
+    ],
     price: 167.9,
     installments: 5,
     category: "organizadores",
@@ -198,6 +198,7 @@ features: [
     material: "MDP",
     availability: "in_stock",
     sku: "JL-SSB-109",
+    image: "/produtos/sapateira-slim-basculante-3-compartimentos.webp",
   },
 ];
 

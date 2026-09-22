@@ -19,10 +19,10 @@ export interface Product {
   price: number;
   installments: number;
   category: ProductCategory;
-  accent: string; // hex color used to tint the illustration
+  accent: string; // cor de apoio visual usada no tema do produto
   dimensions: string;
   material: string;
   availability: Availability;
   sku: string; // código interno do produto, usado como identificador único (GTIN/MPN substitute)
-  image?: string; // caminho em /public/produtos/<slug>.jpg — quando ausente, usa a ilustração SVG como fallback
+  image: string; // caminho da imagem raster local em /public/produtos/
 }

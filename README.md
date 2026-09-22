@@ -19,11 +19,9 @@ Abra http://localhost:3000 no navegador.
    - `whatsappNumber` / `whatsappDisplay` — número real de WhatsApp.
    - `legalName` — razão social completa.
 
-2. **Produtos** — o catálogo em `src/lib/products.ts` está com produtos e preços de exemplo (fictícios), no nicho de móveis e organização para casa. Substitua pelos produtos reais do seu cliente, incluindo fotos reais (veja abaixo).
+2. **Produtos** — o catálogo fica em `src/lib/products.ts`. Revise nomes, especificações, preços e disponibilidade antes de publicar campanhas.
 
-3. **Fotos dos produtos** — hoje cada produto usa uma ilustração genérica em SVG (`src/components/ProductIllustration.tsx`) como espaço reservado. Para usar fotos reais:
-   - Coloque as imagens em `public/produtos/`.
-   - No componente `ProductCard.tsx` e na página `src/app/produtos/[slug]/page.tsx`, troque `<ProductIllustration ... />` por `<Image src="/produtos/nome-da-foto.jpg" ... />` (usando `next/image`).
+3. **Fotos dos produtos** — os nove produtos usam imagens WebP locais em `public/produtos/`, sem dependência de imagens externas ou fallback em SVG. Para substituir uma foto, preserve o nome do arquivo e a proporção quadrada.
 
 4. **Pagamento (Mercado Pago)** — o checkout já está integrado ao Mercado Pago Checkout Pro (aceita Pix, cartão e boleto). Para ativar pagamentos reais:
    - Crie uma conta em https://www.mercadopago.com.br/developers
