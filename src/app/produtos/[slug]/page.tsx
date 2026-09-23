@@ -19,9 +19,7 @@ const GOOGLE_AVAILABILITY: Record<string, string> = {
 };
 
 function publicImage(product: Product) {
-  return product.image.startsWith("render:")
-    ? `${SITE_URL}/logo.png`
-    : `${SITE_URL}${product.image}`;
+  return `${SITE_URL}${product.image}`;
 }
 
 export function generateStaticParams() {
@@ -55,9 +53,14 @@ export default function ProductPage({
   const product = getProductBySlug(params.slug);
   if (!product) notFound();
 
+  const gallery = product.images?.length ? product.images : [product.image];
   const related = products
     .filter((item) => item.slug !== product.slug)
-    .sort((a, b) => Number(b.category === product.category) - Number(a.category === product.category))
+    .sort(
+      (a, b) =>
+        Number(b.category === product.category) -
+        Number(a.category === product.category)
+    )
     .slice(0, 4);
 
   const jsonLd = {
@@ -65,12 +68,12 @@ export default function ProductPage({
     "@type": "Product",
     name: product.name,
     description: product.description,
-    image: publicImage(product),
+    image: gallery.map((image) => `${SITE_URL}${image}`),
     sku: product.sku,
     url: `${SITE_URL}/produtos/${product.slug}`,
     brand: {
       "@type": "Brand",
-      name: siteConfig.brandName,
+      name: product.collection ?? siteConfig.brandName,
     },
     offers: {
       "@type": "Offer",
@@ -88,9 +91,9 @@ export default function ProductPage({
     <div className="mx-auto max-w-6xl px-4 py-12">
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
       <nav className="mb-6 text-xs text-text-muted">
         <Link href="/" className="hover:text-ink">
           Início
@@ -99,20 +102,47 @@ export default function ProductPage({
       </nav>
 
       <div className="grid gap-10 sm:grid-cols-2">
-        <div className="aspect-square overflow-hidden rounded-xl2 bg-white shadow-card">
-          <ProductMedia product={product} className="h-full w-full" />
+        <div>
+          <div className="aspect-square overflow-hidden rounded-xl2 bg-white shadow-card">
+            <ProductMedia product={product} className="h-full w-full" />
+          </div>
+
+          {gallery.length > 1 && (
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              {gallery.slice(1).map((image, index) => (
+                <div
+                  key={image}
+                  className="aspect-square overflow-hidden rounded-xl2 border border-sand-dark bg-white shadow-card"
+                >
+                  <ProductMedia
+                    product={{ ...product, image }}
+                    className="h-full w-full"
+                  />
+                  <span className="sr-only">
+                    Imagem adicional {index + 2} de {product.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
+          {product.collection && (
+            <p className="mb-3 inline-flex rounded-full bg-ink px-4 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-white">
+              {product.collection}
+            </p>
+          )}
           {product.badge && (
-            <span className="mb-3 inline-flex rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
+            <span className="mb-3 ml-2 inline-flex rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
               {product.badge}
             </span>
           )}
+
           <h1 className="font-heading text-2xl font-bold text-ink sm:text-3xl">
             {product.name}
           </h1>
-          <p className="mt-2 text-sm text-text-muted">
+          <p className="mt-2 text-sm leading-relaxed text-text-muted">
             {product.shortDescription}
           </p>
           <p className="mt-3 flex items-center gap-1.5 text-sm font-medium text-emerald-700">
@@ -158,13 +188,8 @@ export default function ProductPage({
           <p className="mt-3 text-sm leading-relaxed text-text-muted">
             {product.description}
           </p>
-          {product.image.startsWith("render:") && (
-            <p className="mt-3 text-xs text-text-muted">
-              Imagem em render ilustrativo exclusivo da loja. Confira medidas,
-              materiais e características descritas nesta página.
-            </p>
-          )}
         </div>
+
         <div>
           <h2 className="font-heading text-lg font-semibold text-ink">
             Características
