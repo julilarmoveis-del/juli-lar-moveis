@@ -1,4 +1,8 @@
 export type ProductCategory =
+  | "organizacao"
+  | "prateleiras"
+  | "aparadores"
+  | "penteadeiras"
   | "organizadores"
   | "sala"
   | "quarto"
@@ -19,10 +23,10 @@ export interface Product {
   price: number;
   installments: number;
   category: ProductCategory;
-  accent: string; // cor de apoio visual usada no tema do produto
+  accent: string;
   dimensions: string;
   material: string;
   availability: Availability;
-  sku: string; // código interno do produto, usado como identificador único (GTIN/MPN substitute)
-  image: string; // caminho da imagem raster local em /public/produtos/
+  sku: string;
+  image: string;
 }
