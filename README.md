@@ -1,58 +1,58 @@
 # JuliLar Ofertas
 
-Site de e-commerce (Next.js 14 + TypeScript + Tailwind CSS) para a loja **JuliLar Ofertas**, com catálogo de produtos, carrinho de compras e checkout integrado ao Mercado Pago (Pix, cartão e boleto).
+Loja virtual em Next.js 14, TypeScript e Tailwind CSS, com catálogo de produtos, páginas institucionais, carrinho e estrutura preparada para publicação na Vercel.
 
-## Como rodar localmente
+## Situação atual
+
+- Domínio previsto: `https://www.julilarofertas.com`
+- Branch de produção: `main`
+- Build e TypeScript validados automaticamente pelo GitHub Actions
+- Carrinho funcionando no navegador
+- Checkout propositalmente desativado até a etapa final de pagamento, frete e testes
+- Nenhum pedido ou pagamento de demonstração é confirmado
+
+## Arquivos principais
+
+- `src/lib/products.ts` — catálogo, preços, descrições e disponibilidade
+- `public/produtos/` — imagens dos produtos
+- `src/lib/site-config.ts` — dados públicos da empresa e canais de atendimento
+- `src/app/` — páginas da loja
+- `src/app/api/checkout/route.ts` — integração de pagamento, mantida bloqueada até a configuração final
+
+## Desenvolvimento local
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra http://localhost:3000 no navegador.
+Depois, acesse `http://localhost:3000`.
 
-## Antes de publicar — o que ajustar
-
-1. **Dados da empresa** — edite `src/lib/site-config.ts` e substitua os campos marcados como `[PLACEHOLDER]`:
-   - `cnpj` — CNPJ real da empresa (obrigatório por lei em sites de e-commerce no Brasil).
-   - `address` — endereço completo da empresa.
-   - `whatsappNumber` / `whatsappDisplay` — número real de WhatsApp.
-   - `legalName` — razão social completa.
-
-2. **Produtos** — o catálogo fica em `src/lib/products.ts`. Revise nomes, especificações, preços e disponibilidade antes de publicar campanhas.
-
-3. **Fotos dos produtos** — os nove produtos usam imagens WebP locais em `public/produtos/`, sem dependência de imagens externas ou fallback em SVG. Para substituir uma foto, preserve o nome do arquivo e a proporção quadrada.
-
-4. **Pagamento (Mercado Pago)** — o checkout já está integrado ao Mercado Pago Checkout Pro (aceita Pix, cartão e boleto). Para ativar pagamentos reais:
-   - Crie uma conta em https://www.mercadopago.com.br/developers
-   - Gere um **Access Token de produção**
-   - Copie `.env.example` para `.env.local` e cole o token em `MERCADOPAGO_ACCESS_TOKEN`
-   - No painel do Vercel, adicione a mesma variável em **Settings → Environment Variables**
-   - Sem essa variável configurada, o checkout funciona em "modo demonstração" (não cobra nada e vai direto para a tela de sucesso) — assim o site funciona de ponta a ponta mesmo antes de configurar o pagamento real.
-
-5. **Logo e favicon** — a logo enviada já está em `public/logo.png` e é usada no cabeçalho e como ícone do site.
-
-## Publicando no GitHub + Vercel
+Para validar a versão de produção:
 
 ```bash
-git init
-git add .
-git commit -m "Primeira versão do site JuliLar Ofertas"
+npx tsc --noEmit
+npm run build
 ```
 
-Depois:
-1. Crie um repositório novo no GitHub (pode ser em uma conta separada, sem problema).
-2. Siga as instruções do próprio GitHub para conectar o repositório local (`git remote add origin ...` e `git push`).
-3. Em https://vercel.com, clique em "Add New Project", importe esse repositório do GitHub e clique em "Deploy". O Vercel detecta automaticamente que é um projeto Next.js.
-4. Não esqueça de adicionar a variável `MERCADOPAGO_ACCESS_TOKEN` (e `NEXT_PUBLIC_SITE_URL` com o domínio final) nas configurações do projeto no Vercel antes do deploy final.
+## Publicação
 
-## Estrutura do projeto
+O fluxo em `.github/workflows/ci.yml` valida cada alteração enviada à branch `main`. Ele também está preparado para publicar na Vercel quando estes três segredos existirem no repositório:
 
-- `src/app` — páginas (Next.js App Router): home, produtos, carrinho, checkout, políticas, sobre, FAQ, contato.
-- `src/components` — componentes reutilizáveis (header, footer, cards de produto, etc).
-- `src/lib` — dados de produtos, configuração do site, contexto do carrinho, formatação de preço.
-- `src/app/api/checkout` — endpoint que cria a preferência de pagamento no Mercado Pago.
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
 
-## Observação importante
+Antes do deploy, o fluxo confere se as credenciais apontam para um projeto JuliLar e bloqueia a publicação se apontarem para outro projeto.
 
-Este site foi construído do zero, com identidade visual, textos e catálogo originais, inspirado apenas na *estrutura* de um site de referência (layout de header/rodapé, selos de confiança, FAQ, políticas) — nenhum texto, imagem ou dado da empresa de referência foi copiado.
+## Checkout — etapa final
+
+Para ativar o checkout, ainda será necessário concluir e testar:
+
+1. Conta e credencial de produção do Mercado Pago.
+2. Cálculo e regras reais de frete.
+3. Validação do retorno e do status do pagamento.
+4. Registro e acompanhamento dos pedidos.
+5. Variáveis `MERCADOPAGO_ACCESS_TOKEN`, `CHECKOUT_ENABLED=true` e configuração pública correspondente na Vercel.
+
+Até essa etapa ser concluída, a página informa claramente que o pagamento online está em configuração e preserva o carrinho do cliente.
