@@ -18,8 +18,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-sand-dark bg-sand/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <Link href="/" className="flex items-center" aria-label="JuliLar Ofertas — página inicial">
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+        <Link
+          href="/"
+          className="absolute left-1/2 flex -translate-x-1/2 items-center md:static md:translate-x-0"
+          aria-label="JuliLar Ofertas — página inicial"
+        >
           <Image
             src="/logo.png"
             alt="JuliLar Ofertas"
@@ -42,7 +46,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-3">
           <Link
             href="/carrinho"
             className="relative flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink-dark"
