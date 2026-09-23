@@ -23,7 +23,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: package.json
 
@@ -44,69 +44,61 @@ jobs:
     timeout-minutes: 20
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ORG_ID: team_g7oIB0teRPGb5iMKfOMGlgX5
+      VERCEL_PROJECT_ID: prj_LyVHyWOseic3fsmL8O4HoY81p5zz
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Conferir credenciais da Vercel
-        id: credentials
+      - name: Conferir autorização
         shell: bash
         run: |
-          ready=true
-          for variable in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
-            if [ -z "${!variable}" ]; then
-              echo "::notice title=Vercel não conectada::$variable ainda não está configurada neste repositório. A publicação foi ignorada sem afetar o site."
-              ready=false
-            fi
-          done
-          echo "ready=$ready" >> "$GITHUB_OUTPUT"
-
-      - name: Confirmar que o projeto é da JuliLar
-        if: steps.credentials.outputs.ready == 'true'
-        shell: bash
-        run: |
-          endpoint="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}"
-          if [[ "$VERCEL_ORG_ID" == team_* ]]; then
-            endpoint="${endpoint}?teamId=${VERCEL_ORG_ID}"
+          set -euo pipefail
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error title=Token ausente::O segredo VERCEL_TOKEN não está configurado."
+            exit 1
           fi
 
-          project_json=$(curl --fail --silent --show-error \
-            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
-            "$endpoint")
-          project_name=$(printf '%s' "$project_json" | jq -r '.name // empty')
+      - name: Confirmar projeto e corrigir comando de build
+        shell: bash
+        run: |
+          set -euo pipefail
+          endpoint="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}"
 
-          case "$project_name" in
-            julilar-deploy-novo|juli-lar-moveis|julilar-ofertas)
-              echo "Projeto confirmado: $project_name"
-              ;;
-            *)
-              echo "::error title=Publicação bloqueada::As credenciais apontam para '$project_name', e não para um projeto JuliLar. Nenhum deploy foi realizado."
-              exit 1
-              ;;
-          esac
+          project_json="$(curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
+            "$endpoint")"
+          project_name="$(printf '%s' "$project_json" | jq -r '.name // empty')"
+
+          if [ "$project_name" != "julilar-deploy-novo" ]; then
+            echo "::error title=Publicação bloqueada::As credenciais apontam para '$project_name'."
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error \
+            --request PATCH \
+            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm install","nodeVersion":"22.x"}' \
+            "$endpoint" >/dev/null
+
+          echo "Projeto confirmado e configuração de build corrigida: $project_name"
 
       - name: Configurar Node.js
-        if: steps.credentials.outputs.ready == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: package.json
 
       - name: Instalar dependências
-        if: steps.credentials.outputs.ready == 'true'
         run: npm install --no-audit --no-fund
 
       - name: Carregar configuração da Vercel
-        if: steps.credentials.outputs.ready == 'true'
         run: npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Gerar build da Vercel
-        if: steps.credentials.outputs.ready == 'true'
         run: npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
 
       - name: Publicar em produção
-        if: steps.credentials.outputs.ready == 'true'
         run: npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
