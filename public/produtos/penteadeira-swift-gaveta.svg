@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+<rect width="1200" height="1200" fill="#f5efe8"/>
+<rect x="70" y="70" width="1060" height="1060" rx="38" fill="#fff"/>
+<rect x="85" y="85" width="325" height="165" fill="#0F2A52"/>
+<text x="125" y="150" font-family="Arial,sans-serif" font-size="52" fill="#fff" letter-spacing="7">LINHA</text>
+<text x="125" y="218" font-family="Arial,sans-serif" font-size="68" fill="#fff" letter-spacing="5">SWIFT</text>
+<text x="95" y="350" font-family="Georgia,serif" font-size="58" font-weight="700" fill="#0F2A52">Mais espaço na gaveta.</text>
+<text x="95" y="410" font-family="Arial,sans-serif" font-size="31" fill="#475569">Trilho telescópico para abertura ampla e suave.</text>
+<g transform="translate(165 500)">
+<rect x="80" y="60" width="720" height="170" rx="18" fill="#f7f7f5" stroke="#c9c4bc" stroke-width="6"/>
+<rect x="145" y="110" width="590" height="165" rx="14" fill="#fdfcf9" stroke="#bfb8ae" stroke-width="6"/>
+<line x1="165" y1="130" x2="710" y2="130" stroke="#ded9d2" stroke-width="4"/>
+<rect x="350" y="185" width="180" height="14" rx="7" fill="#8f7a66"/>
+<circle cx="235" cy="175" r="28" fill="#d4b08f"/>
+<circle cx="300" cy="175" r="22" fill="#c8a6a6"/>
+<rect x="575" y="145" width="70" height="50" rx="10" fill="#d8c2aa"/>
+<path d="M110 300h620" stroke="#0f8f64" stroke-width="6" stroke-linecap="round"/>
+<text x="420" y="355" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#0f8f64">GAVETA GRANDE DE CORRER</text>
+</g>
+<g font-family="Arial,sans-serif">
+<text x="120" y="970" font-size="29" fill="#0F2A52">• Organização de maquiagens, perfumes e acessórios</text>
+<text x="120" y="1020" font-size="29" fill="#0F2A52">• Abertura total com trilho telescópico metálico</text>
+<text x="120" y="1070" font-size="29" fill="#0F2A52">• Instalação suspensa que libera o piso</text>
+</g>
+</svg>
