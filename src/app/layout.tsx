@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { CartProvider } from "@/lib/cart-context";
-import { siteConfig } from "@/lib/site-config";
+import { SITE_URL, siteConfig } from "@/lib/site-config";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,11 +19,30 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "JuliLar Ofertas | Móveis e organização para a sua casa",
   description:
-    "Móveis multifuncionais e soluções de organização para casa, com frete para todo o Brasil, nota fiscal em todos os pedidos e devolução facilitada.",
+    "Móveis multifuncionais e soluções de organização para casa, com informações claras, políticas publicadas e atendimento pelos canais oficiais.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: SITE_URL,
+    siteName: siteConfig.brandName,
+    title: "JuliLar Ofertas | Móveis e organização para a sua casa",
+    description:
+      "Móveis multifuncionais e soluções de organização para casa.",
+    images: ["/logo.png"],
+  },
   icons: {
     icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -32,15 +51,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://julilarmoveis.com";
   const organizationJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Store",
+    "@type": "OnlineStore",
     name: siteConfig.brandName,
-    url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    image: `${siteUrl}/logo.png`,
+    legalName: siteConfig.legalName,
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    image: `${SITE_URL}/logo.png`,
     email: siteConfig.email,
+    taxID: siteConfig.cnpj,
+    ...(siteConfig.whatsappNumber
+      ? { telephone: `+${siteConfig.whatsappNumber}` }
+      : {}),
     sameAs: [siteConfig.social.instagram],
     address: {
       "@type": "PostalAddress",

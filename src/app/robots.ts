@@ -1,13 +1,14 @@
 import { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site-config";
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://julilarmoveis.com";
-
   return {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: ["/checkout", "/carrinho", "/api/"],
     },
-    sitemap: `${siteUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

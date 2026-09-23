@@ -3,17 +3,17 @@ import { siteConfig } from "@/lib/site-config";
 const badges = [
   {
     title: `${siteConfig.returnDays} dias para troca ou devolução`,
-    description: "Não gostou? Devolução facilitada, sem burocracia.",
+    description: "Solicitação conforme as condições da política de devolução.",
     icon: "↺",
   },
   {
-    title: "Frete para todo o Brasil",
-    description: "Enviamos para todos os estados com rastreio.",
+    title: "Entrega para todo o Brasil",
+    description: "Envio com acompanhamento conforme a política da loja.",
     icon: "🚚",
   },
   {
-    title: "Nota fiscal em todos os pedidos",
-    description: "Compra segura, com emissão automática de NF-e.",
+    title: "Empresa identificada",
+    description: "CNPJ, endereço e canais de atendimento disponíveis.",
     icon: "🧾",
   },
 ];

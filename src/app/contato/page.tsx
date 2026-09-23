@@ -15,34 +15,38 @@ export default function ContatoPage() {
         Fale com a gente
       </h1>
       <p className="mt-3 text-sm text-text-muted">
-        Respondemos por WhatsApp e e-mail, {siteConfig.serviceHours.toLowerCase()}.
+        Respondemos pelos canais oficiais, {siteConfig.serviceHours.toLowerCase()}.
       </p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <a
-          href={siteConfig.social.whatsapp}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-xl2 bg-white p-6 shadow-card transition hover:shadow-cardHover"
-        >
-          <p className="font-heading text-sm font-semibold text-ink">
-            WhatsApp
-          </p>
-          <p className="mt-1 text-sm text-text-muted">
-            {siteConfig.whatsappDisplay}
-          </p>
-          <p className="mt-3 text-xs text-brand-dark">
-            Clique para iniciar uma conversa →
-          </p>
-        </a>
+      <div
+        className={`mt-8 grid gap-4 ${
+          siteConfig.social.whatsapp ? "sm:grid-cols-2" : "sm:grid-cols-1"
+        }`}
+      >
+        {siteConfig.social.whatsapp && (
+          <a
+            href={siteConfig.social.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl2 bg-white p-6 shadow-card transition hover:shadow-cardHover"
+          >
+            <p className="font-heading text-sm font-semibold text-ink">
+              WhatsApp
+            </p>
+            <p className="mt-1 text-sm text-text-muted">
+              {siteConfig.whatsappDisplay}
+            </p>
+            <p className="mt-3 text-xs text-brand-dark">
+              Clique para iniciar uma conversa →
+            </p>
+          </a>
+        )}
 
         <a
           href={mailtoHref}
           className="rounded-xl2 bg-white p-6 shadow-card transition hover:shadow-cardHover"
         >
-          <p className="font-heading text-sm font-semibold text-ink">
-            E-mail
-          </p>
+          <p className="font-heading text-sm font-semibold text-ink">E-mail</p>
           <p className="mt-1 text-sm text-text-muted">{siteConfig.email}</p>
           <p className="mt-3 text-xs text-brand-dark">
             Clique para enviar um e-mail →
