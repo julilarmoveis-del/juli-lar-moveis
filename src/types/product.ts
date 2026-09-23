@@ -30,6 +30,7 @@ export interface Product {
   sku: string;
   image: string;
   images?: string[];
+  imageLabels?: string[];
   collection?: string;
   badge?: string;
 }

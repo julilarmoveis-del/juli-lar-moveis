@@ -3,13 +3,13 @@ import type { Product } from "@/types/product";
 export const products: Product[] = [
   {
     slug: "sapateira-organizadora-swift-3-gavetas",
-    name: "Sapateira Organizadora Swift 3 Gavetas",
+    name: "Sapateira Organizadora Niva 3 Gavetas",
     shortDescription:
-      "Sapateira slim da Linha Swift, com 3 gavetas basculantes e apenas 14 cm de profundidade.",
+      "Sapateira slim da Linha Niva, com 3 gavetas basculantes e apenas 14 cm de profundidade.",
     description:
-      "A Sapateira Organizadora Swift faz parte da Linha Swift, criada para aproveitar melhor ambientes compactos sem abrir mão de organização e visual clean. Com 67 cm de largura, 110 cm de altura e apenas 14 cm de profundidade, ela se encaixa muito bem em quartos, closets, corredores e halls de entrada. As três gavetas basculantes acomodam até 12 pares de calçados, mantendo tudo protegido e fácil de acessar. O produto é enviado montado e acompanha buchas e parafusos para fixação na parede.",
+      "A Sapateira Organizadora Niva faz parte da Linha Niva, criada para aproveitar melhor ambientes compactos sem abrir mão de organização e visual clean. Com 67 cm de largura, 110 cm de altura e apenas 14 cm de profundidade, ela se encaixa muito bem em quartos, closets, corredores e halls de entrada. As três gavetas basculantes acomodam até 12 pares de calçados, mantendo tudo protegido e fácil de acessar. O produto é enviado montado e acompanha buchas e parafusos para fixação na parede.",
     features: [
-      "Linha Swift — design compacto e funcional",
+      "Linha Niva — design compacto e funcional",
       "3 gavetas basculantes para até 12 pares — 4 pares por gaveta",
       "Profundidade slim de apenas 14 cm",
       "Produto enviado montado",
@@ -19,7 +19,7 @@ export const products: Product[] = [
     price: 187.9,
     installments: 6,
     category: "organizacao",
-    accent: "#0F2A52",
+    accent: "#141F2D",
     dimensions: "67cm (L) x 110cm (A) x 14cm (P)",
     material: "MDP com acabamento branco",
     availability: "in_stock",
@@ -28,10 +28,18 @@ export const products: Product[] = [
     images: [
       "/produtos/sapateira-organizadora-swift-3-gavetas.webp",
       "/produtos/sapateira-slim-basculante-3-compartimentos.webp",
-      "/produtos/sapateira-swift-medidas.svg",
-      "/produtos/sapateira-swift-organizacao.svg",
+      "/produtos/sapateira-niva-medidas.svg",
+      "/produtos/sapateira-niva-organizacao.svg",
+      "/produtos/sapateira-niva-slim.svg",
     ],
-    collection: "Linha Swift",
+    imageLabels: [
+      "Produto",
+      "Vista adicional",
+      "Medidas técnicas",
+      "Capacidade",
+      "Design slim",
+    ],
+    collection: "Linha Niva",
   },
   {
     slug: "prateleira-flutuante-madeira-macica",
@@ -104,13 +112,13 @@ export const products: Product[] = [
   },
   {
     slug: "penteadeira-swift-suspensa-60cm",
-    name: "Penteadeira Swift Suspensa 60cm em MDF",
+    name: "Penteadeira Niva Suspensa 60cm em MDF",
     shortDescription:
-      "Penteadeira compacta da Linha Swift, com gaveta grande de correr e trilho telescópico.",
+      "Penteadeira compacta da Linha Niva, com gaveta grande de correr e trilho telescópico.",
     description:
-      "A Penteadeira Swift Suspensa 60cm integra a Linha Swift e foi pensada para criar um cantinho de maquiagem funcional mesmo em quartos menores. Produzida em MDF branco, possui uma gaveta grande de correr para organizar maquiagens, perfumes, acessórios e objetos pessoais. O trilho telescópico metálico permite abertura ampla e suave da gaveta, enquanto a instalação suspensa libera o piso e deixa o ambiente visualmente mais leve e fácil de limpar.",
+      "A Penteadeira Niva Suspensa 60cm integra a Linha Niva e foi pensada para criar um cantinho de maquiagem funcional mesmo em quartos menores. Produzida em MDF branco, possui uma gaveta grande de correr para organizar maquiagens, perfumes, acessórios e objetos pessoais. O trilho telescópico metálico permite abertura ampla e suave da gaveta, enquanto a instalação suspensa libera o piso e deixa o ambiente visualmente mais leve e fácil de limpar.",
     features: [
-      "Linha Swift — visual clean e aproveitamento inteligente do espaço",
+      "Linha Niva — visual clean e aproveitamento inteligente do espaço",
       "1 gaveta grande de correr",
       "Trilho telescópico metálico com abertura ampla e suave",
       "Estrutura em MDF branco",
@@ -128,10 +136,17 @@ export const products: Product[] = [
     image: "/produtos/penteadeira-swift-suspensa-60cm.webp",
     images: [
       "/produtos/penteadeira-swift-suspensa-60cm.webp",
-      "/produtos/penteadeira-swift-medidas.svg",
-      "/produtos/penteadeira-swift-gaveta.svg",
+      "/produtos/penteadeira-niva-medidas.svg",
+      "/produtos/penteadeira-niva-gaveta.svg",
+      "/produtos/penteadeira-niva-suspensa.svg",
     ],
-    collection: "Linha Swift",
+    imageLabels: [
+      "Produto",
+      "Medidas técnicas",
+      "Gaveta ampla",
+      "Instalação suspensa",
+    ],
+    collection: "Linha Niva",
   },
 ];
 

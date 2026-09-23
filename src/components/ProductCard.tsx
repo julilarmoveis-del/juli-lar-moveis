@@ -22,6 +22,11 @@ export function ProductCard({ product }: { product: Product }) {
         <ProductMedia product={product} className="h-full w-full" />
       </div>
       <div className="flex flex-1 flex-col gap-2 border-t border-sand-dark p-5">
+        {product.collection && (
+          <span className="w-fit rounded-full bg-sand px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-ink">
+            {product.collection}
+          </span>
+        )}
         <h3 className="font-heading text-base font-semibold leading-snug text-text">
           {product.name}
         </h3>

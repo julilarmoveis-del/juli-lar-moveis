@@ -6,7 +6,7 @@ import {
   installmentPrice,
   availabilityLabel,
 } from "@/lib/format";
-import { ProductMedia } from "@/components/ProductMedia";
+import { ProductGallery } from "@/components/ProductGallery";
 import { ProductCard } from "@/components/ProductCard";
 import { AddToCartButton } from "@/components/AddToCartButton";
 import { SITE_URL, siteConfig } from "@/lib/site-config";
@@ -88,7 +88,7 @@ export default function ProductPage({
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:py-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -101,31 +101,8 @@ export default function ProductPage({
         / <span className="text-ink">{product.name}</span>
       </nav>
 
-      <div className="grid gap-10 sm:grid-cols-2">
-        <div>
-          <div className="aspect-square overflow-hidden rounded-xl2 bg-white shadow-card">
-            <ProductMedia product={product} className="h-full w-full" />
-          </div>
-
-          {gallery.length > 1 && (
-            <div className="mt-4 grid grid-cols-3 gap-3">
-              {gallery.slice(1).map((image, index) => (
-                <div
-                  key={image}
-                  className="aspect-square overflow-hidden rounded-xl2 border border-sand-dark bg-white shadow-card"
-                >
-                  <ProductMedia
-                    product={{ ...product, image }}
-                    className="h-full w-full"
-                  />
-                  <span className="sr-only">
-                    Imagem adicional {index + 2} de {product.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+      <div className="grid gap-10 lg:grid-cols-[1.08fr_.92fr] lg:items-start">
+        <ProductGallery product={product} />
 
         <div>
           {product.collection && (
