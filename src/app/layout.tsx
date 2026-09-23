@@ -20,10 +20,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: {
-    default: "JuliLar Ofertas | Móveis e organização para a sua casa",
-    template: "%s | JuliLar Ofertas",
-  },
+  title: "JuliLar Ofertas | Móveis e organização para a sua casa",
   description:
     "Móveis multifuncionais e soluções de organização para casa, com informações claras, políticas publicadas e atendimento pelos canais oficiais.",
   alternates: {
