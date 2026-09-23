@@ -8,32 +8,32 @@ const faq = [
   {
     question: "Qual o prazo de entrega?",
     answer:
-      "O prazo médio é de 4 a 10 dias úteis após a confirmação do pagamento, variando de acordo com a sua região. Você recebe o código de rastreio por e-mail assim que o pedido é postado.",
+      "O prazo de entrega depende do CEP, da disponibilidade do item e da transportadora. Consulte as condições exibidas no checkout e a nossa Política de Envio antes de finalizar.",
   },
   {
     question: "Os produtos já vêm montados?",
     answer:
-      "A maioria dos nossos móveis vem desmontada, com manual ilustrado e todos os parafusos e ferramentas básicas inclusos para facilitar a montagem em casa.",
+      "A informação de montagem está na descrição de cada produto. Quando necessário, o item acompanha manual e componentes de fixação informados pelo fabricante.",
   },
   {
-    question: `Posso devolver se não gostar?`,
-    answer: `Sim. Você tem ${siteConfig.returnDays} dias corridos a partir do recebimento para solicitar troca ou devolução, conforme o Código de Defesa do Consumidor.`,
+    question: "Posso devolver se não gostar?",
+    answer: `Você tem ${siteConfig.returnDays} dias corridos a partir do recebimento para solicitar o direito de arrependimento, conforme as condições descritas na Política de Devolução.`,
   },
   {
     question: "Quais formas de pagamento são aceitas?",
     answer:
-      "Aceitamos Pix (com confirmação imediata) e cartão de crédito em até 12x. Todos os pedidos geram nota fiscal eletrônica automaticamente.",
+      "As formas de pagamento disponíveis são apresentadas no ambiente seguro do provedor de pagamentos no momento da finalização.",
   },
   {
     question: "Como funciona a garantia?",
-    answer: `Todos os produtos possuem ${siteConfig.warrantyDays} dias de garantia contra defeitos de fabricação, além da garantia legal prevista em lei.`,
+    answer: `Os produtos possuem ${siteConfig.warrantyDays} dias de garantia legal para bens duráveis, sem prejuízo de eventual garantia adicional informada pelo fabricante.`,
   },
 ];
 
 export default function HomePage() {
   return (
     <div>
-      <section className="mx-auto max-w-6xl px-4 pt-14 pb-10 text-center sm:pt-20">
+      <section className="mx-auto max-w-6xl px-4 pb-10 pt-14 text-center sm:pt-20">
         <p className="mx-auto mb-4 w-fit rounded-full bg-accent px-4 py-1 text-xs font-semibold uppercase tracking-wide text-ink">
           Organização inteligente para a sua casa
         </p>
@@ -41,9 +41,8 @@ export default function HomePage() {
           Móveis multifuncionais que transformam qualquer cantinho da sua casa
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base text-text-muted sm:text-lg">
-          Peças pensadas para otimizar espaço, com qualidade testada e entrega
-          para todo o Brasil. Compra 100% online, com nota fiscal e suporte
-          humanizado.
+          Peças pensadas para otimizar espaço, com informações claras, compra
+          online e atendimento pelos canais oficiais da loja.
         </p>
         <div className="mt-8 flex justify-center">
           <Link
@@ -65,7 +64,7 @@ export default function HomePage() {
             Nossos produtos
           </h2>
           <p className="mt-2 text-sm text-text-muted">
-            Catálogo selecionado, sem enrolação — só o que realmente resolve.
+            Catálogo selecionado, com preço e especificações de cada item.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -84,15 +83,13 @@ export default function HomePage() {
             <p className="mt-4 text-sm leading-relaxed text-text-muted">
               Somos uma loja virtual brasileira especializada em móveis
               multifuncionais e soluções de organização para o dia a dia.
-              Trabalhamos com um catálogo enxuto, escolhido a dedo, priorizando
-              qualidade de material e facilidade de montagem — sem exagerar
-              nas opções para você não perder tempo comparando dezenas de
-              produtos parecidos.
+              Trabalhamos com um catálogo enxuto e informações objetivas para
+              facilitar a escolha dos produtos.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-text-muted">
-              Todas as compras são processadas com nota fiscal eletrônica,
-              seguem as regras do Código de Defesa do Consumidor e contam com
-              suporte via WhatsApp e e-mail em horário comercial.
+              As compras seguem as políticas publicadas no site e contam com
+              atendimento por e-mail e, quando configurado, WhatsApp em horário
+              comercial.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -100,20 +97,20 @@ export default function HomePage() {
               <p className="font-heading text-3xl font-extrabold text-ink">
                 {siteConfig.returnDays} dias
               </p>
-              <p className="text-xs text-text-muted">para troca ou devolução</p>
+              <p className="text-xs text-text-muted">para solicitar devolução</p>
             </div>
             <div className="rounded-xl2 bg-sand p-6 text-center">
               <p className="font-heading text-3xl font-extrabold text-ink">
                 {siteConfig.warrantyDays} dias
               </p>
-              <p className="text-xs text-text-muted">de garantia de fábrica</p>
+              <p className="text-xs text-text-muted">de garantia legal</p>
             </div>
             <div className="col-span-2 rounded-xl2 bg-sand p-6 text-center">
               <p className="font-heading text-3xl font-extrabold text-ink">
                 Brasil todo
               </p>
               <p className="text-xs text-text-muted">
-                enviamos para todos os estados, com rastreio
+                cobertura conforme a Política de Envio
               </p>
             </div>
           </div>
@@ -147,7 +144,7 @@ export default function HomePage() {
             Ficou com alguma dúvida?
           </h2>
           <p className="mt-3 text-sm text-sand/80">
-            Fale com a gente pelo WhatsApp ou e-mail — respondemos em horário
+            Fale com a gente pelos canais oficiais — respondemos em horário
             comercial.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -157,14 +154,16 @@ export default function HomePage() {
             >
               Página de contato
             </Link>
-            <a
-              href={siteConfig.social.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
-            >
-              Falar no WhatsApp
-            </a>
+            {siteConfig.social.whatsapp && (
+              <a
+                href={siteConfig.social.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                Falar no WhatsApp
+              </a>
+            )}
           </div>
         </div>
       </section>
