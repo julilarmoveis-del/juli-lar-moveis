@@ -13,7 +13,7 @@ jobs:
   sync-images:
     name: Baixar e publicar fotos aprovadas
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Baixar código
@@ -29,51 +29,210 @@ jobs:
             local url="$1"
             local output="$2"
             echo "Baixando $output"
-            curl --fail --location --retry 4 --retry-delay 2 \
-              --user-agent "Mozilla/5.0 JuliLarImageSync/1.0" \
-              "$url" --output "$output"
+            curl --fail --location --retry 4 --retry-delay 2               --user-agent "Mozilla/5.0 JuliLarImageSync/2.0"               "$url" --output "$output"
             test "$(stat -c%s "$output")" -gt 5000
           }
 
-          download \
-            "https://www.saldaodoserjao.com/products/sapateira/sapateira_main.webp" \
-            "public/produtos/sapateira-organizadora-swift-3-gavetas.webp"
+          # Imagens principais já aprovadas
+          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira_main.webp"             "public/produtos/sapateira-organizadora-swift-3-gavetas.webp"
 
-          download \
-            "https://www.saldaodoserjao.com/products/prateleira/prateleira%20madeira%201.webp" \
-            "public/produtos/prateleira-flutuante-madeira-macica.webp"
+          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift1.webp"             "public/produtos/penteadeira-swift-suspensa-60cm.webp"
 
-          download \
-            "https://www.saldaodoserjao.com/products/prateleira-aparadora/main.webp" \
-            "public/produtos/prateleira-aparadora-16x45.webp"
+          # Vistas extras — Sapateira
+          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira-frente-20260923.webp"             "public/produtos/sapateira-niva-frente.webp"
 
-          download \
-            "https://www.saldaodoserjao.com/products/aparador-suspenso/capa-gaveta-aberta.jpg" \
-            "public/produtos/aparador-suspenso-60cm.jpg"
+          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira-lateral-20260923.webp"             "public/produtos/sapateira-niva-lateral.webp"
 
-          download \
-            "https://www.saldaodoserjao.com/products/penteadeira-swift/swift1.webp" \
-            "public/produtos/penteadeira-swift-suspensa-60cm.webp"
+          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira-swift-aberta-clara.webp"             "public/produtos/sapateira-niva-aberta.webp"
 
-          file public/produtos/sapateira-organizadora-swift-3-gavetas.webp
-          file public/produtos/prateleira-flutuante-madeira-macica.webp
-          file public/produtos/prateleira-aparadora-16x45.webp
-          file public/produtos/aparador-suspenso-60cm.jpg
-          file public/produtos/penteadeira-swift-suspensa-60cm.webp
+          # Vistas extras — Penteadeira
+          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift2.webp"             "public/produtos/penteadeira-niva-vista-2.webp"
 
-      - name: Remover arquivo temporário, versionar e publicar
+          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift3.webp"             "public/produtos/penteadeira-niva-vista-3.webp"
+
+          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift4.webp"             "public/produtos/penteadeira-niva-vista-4.webp"
+
+          # Demais produtos já usados pela loja
+          download             "https://www.saldaodoserjao.com/products/prateleira/prateleira%20madeira%201.webp"             "public/produtos/prateleira-flutuante-madeira-macica.webp"
+
+          download             "https://www.saldaodoserjao.com/products/prateleira-aparadora/main.webp"             "public/produtos/prateleira-aparadora-16x45.webp"
+
+          download             "https://www.saldaodoserjao.com/products/aparador-suspenso/capa-gaveta-aberta.jpg"             "public/produtos/aparador-suspenso-60cm.jpg"
+
+      - name: Criar duas artes profissionais por produto
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf .github/product-images
+          python3 -m pip install --quiet pillow
+
+          cat > /tmp/create_niva_slides.py <<'PY'
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter
+          from pathlib import Path
+
+          ROOT = Path("public/produtos")
+          W = H = 1200
+
+          BG = "#f5eadf"
+          PANEL = "#a98262"
+          PANEL_DARK = "#8f6c51"
+          INK = "#4a2e1d"
+          MUTED = "#725b4c"
+          ACCENT = "#d6a56e"
+          CARD = "#fffaf5"
+
+          SANS = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+          SANS_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+          SERIF_B = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
+
+          def font(path, size):
+              return ImageFont.truetype(path, size)
+
+          def fit_contain(img, box):
+              x, y, w, h = box
+              img = img.convert("RGB")
+              scale = min(w / img.width, h / img.height)
+              nw, nh = int(img.width * scale), int(img.height * scale)
+              resized = img.resize((nw, nh), Image.Resampling.LANCZOS)
+              canvas = Image.new("RGB", (w, h), CARD)
+              canvas.paste(resized, ((w - nw)//2, (h - nh)//2))
+              return canvas
+
+          def rounded_paste(base, img, box, radius=30):
+              x, y, w, h = box
+              fitted = fit_contain(img, box)
+              mask = Image.new("L", (w, h), 0)
+              md = ImageDraw.Draw(mask)
+              md.rounded_rectangle((0,0,w,h), radius=radius, fill=255)
+              base.paste(fitted, (x,y), mask)
+
+          def wrap(draw, text, f, max_width):
+              words = text.split()
+              lines = []
+              line = ""
+              for word in words:
+                  test = word if not line else line + " " + word
+                  if draw.textbbox((0,0), test, font=f)[2] <= max_width:
+                      line = test
+                  else:
+                      if line:
+                          lines.append(line)
+                      line = word
+              if line:
+                  lines.append(line)
+              return lines
+
+          def draw_lines(draw, lines, xy, f, fill, spacing=8):
+              x, y = xy
+              for line in lines:
+                  draw.text((x,y), line, font=f, fill=fill)
+                  y += f.size + spacing
+              return y
+
+          def make_slide(src_path, out_path, headline, subline, features):
+              src = Image.open(src_path).convert("RGB")
+              canvas = Image.new("RGB", (W,H), BG)
+              draw = ImageDraw.Draw(canvas)
+
+              # fundo sutil com sombra suave
+              shadow = Image.new("RGBA", (W,H), (0,0,0,0))
+              sd = ImageDraw.Draw(shadow)
+              sd.rounded_rectangle((502,48,1165,995), radius=38, fill=(70,42,25,28))
+              shadow = shadow.filter(ImageFilter.GaussianBlur(18))
+              canvas = Image.alpha_composite(canvas.convert("RGBA"), shadow).convert("RGB")
+              draw = ImageDraw.Draw(canvas)
+
+              # painel de marca
+              draw.rounded_rectangle((48,48,455,275), radius=38, fill=PANEL)
+              draw.text((86,78), "LINHA", font=font(SANS,28), fill="#fff7ef")
+              draw.text((82,116), "NIVA", font=font(SANS,72), fill="#fff7ef")
+              draw.line((84,205,175,205), fill="#f6dcc4", width=4)
+              draw.text((84,222), "JULILAR  •  CASA EM EQUILÍBRIO", font=font(SANS,17), fill="#fff7ef")
+
+              # texto principal
+              hf = font(SERIF_B, 68)
+              lines = wrap(draw, headline, hf, 390)
+              y = draw_lines(draw, lines, (60,330), hf, INK, spacing=3)
+              draw.line((62,y+10,145,y+10), fill=ACCENT, width=5)
+              sf = font(SANS, 31)
+              slines = wrap(draw, subline, sf, 390)
+              draw_lines(draw, slines, (62,y+42), sf, MUTED, spacing=8)
+
+              # imagem
+              rounded_paste(canvas, src, (505,55,650,915), radius=34)
+
+              # barra de atributos
+              draw.rounded_rectangle((50,1000,1150,1135), radius=42, fill=CARD)
+              col_w = 1100 // 3
+              ff = font(SANS_B, 24)
+              for i, feat in enumerate(features):
+                  cx = 50 + i*col_w
+                  if i > 0:
+                      draw.line((cx,1027,cx,1108), fill="#dcc2a8", width=2)
+                  circle_x = cx + 38
+                  draw.ellipse((circle_x,1031,circle_x+70,1101), outline=PANEL_DARK, width=3)
+                  draw.text((circle_x+22,1047), str(i+1), font=font(SANS_B, 26), fill=PANEL_DARK)
+                  flines = wrap(draw, feat, ff, 235)
+                  draw_lines(draw, flines, (circle_x+95,1040), ff, INK, spacing=4)
+
+              # rodapé
+              draw.line((245,1172,335,1172), fill=PANEL_DARK, width=2)
+              draw.line((865,1172,955,1172), fill=PANEL_DARK, width=2)
+              footer = "JULILAR — UM LAR MAIS PRÁTICO PARA VOCÊ"
+              ffoot = font(SANS, 17)
+              bbox = draw.textbbox((0,0), footer, font=ffoot)
+              draw.text(((W-(bbox[2]-bbox[0]))/2,1158), footer, font=ffoot, fill=MUTED)
+
+              canvas.save(out_path, "WEBP", quality=89, method=6)
+
+          make_slide(
+              ROOT/"sapateira-organizadora-swift-3-gavetas.webp",
+              ROOT/"sapateira-niva-tudo-no-lugar.webp",
+              "Tudo no lugar.",
+              "3 gavetas basculantes para organizar o dia a dia.",
+              ["3 gavetas", "Até 12 pares", "Acesso prático"],
+          )
+          make_slide(
+              ROOT/"sapateira-niva-lateral.webp",
+              ROOT/"sapateira-niva-slim.webp",
+              "Slim de verdade.",
+              "67 cm largura • 110 cm altura • 14 cm profundidade.",
+              ["Perfil slim", "Ambientes compactos", "Visual clean"],
+          )
+          make_slide(
+              ROOT/"penteadeira-swift-suspensa-60cm.webp",
+              ROOT/"penteadeira-niva-mais-espaco.webp",
+              "Mais espaço na gaveta.",
+              "Compacta, funcional e pronta para o dia a dia.",
+              ["Gaveta ampla", "Trilho telescópico", "Instalação suspensa"],
+          )
+          make_slide(
+              ROOT/"penteadeira-niva-vista-2.webp",
+              ROOT/"penteadeira-niva-medidas-profissional.webp",
+              "Medidas que se encaixam.",
+              "60 cm largura • 14 cm altura • 30 cm profundidade.",
+              ["MDF branco", "Gaveta ampla", "Instalação suspensa"],
+          )
+          PY
+
+          python3 /tmp/create_niva_slides.py
+
+          file public/produtos/sapateira-niva-tudo-no-lugar.webp
+          file public/produtos/sapateira-niva-slim.webp
+          file public/produtos/penteadeira-niva-mais-espaco.webp
+          file public/produtos/penteadeira-niva-medidas-profissional.webp
+
+      - name: Versionar e publicar
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name "JuliLar Automation"
           git config user.email "julilarmoveis@gmail.com"
-          git add public/produtos .github/product-images || true
+          git add public/produtos
 
           if git diff --cached --quiet; then
             echo "As fotos aprovadas já estão publicadas."
             exit 0
           fi
 
-          git commit -m "feat: publicar fotos aprovadas dos cinco produtos"
+          git commit -m "feat: publicar galeria profissional Linha Niva"
           git push
