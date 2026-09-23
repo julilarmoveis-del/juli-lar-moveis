@@ -1,0 +1,79 @@
+name: Instalar fotos aprovadas dos produtos
+
+on:
+  push:
+    paths:
+      - ".github/workflows/sync-approved-product-images.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-images:
+    name: Baixar e publicar fotos aprovadas
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Baixar fotos aprovadas
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/produtos
+
+          download() {
+            local url="$1"
+            local output="$2"
+            echo "Baixando $output"
+            curl --fail --location --retry 4 --retry-delay 2 \
+              --user-agent "Mozilla/5.0 JuliLarImageSync/1.0" \
+              "$url" --output "$output"
+            test "$(stat -c%s "$output")" -gt 5000
+          }
+
+          download \
+            "https://www.saldaodoserjao.com/products/sapateira/sapateira_main.webp" \
+            "public/produtos/sapateira-organizadora-swift-3-gavetas.webp"
+
+          download \
+            "https://www.saldaodoserjao.com/products/prateleira/prateleira%20madeira%201.webp" \
+            "public/produtos/prateleira-flutuante-madeira-macica.webp"
+
+          download \
+            "https://www.saldaodoserjao.com/products/prateleira-aparadora/main.webp" \
+            "public/produtos/prateleira-aparadora-16x45.webp"
+
+          download \
+            "https://www.saldaodoserjao.com/products/aparador-suspenso/capa-gaveta-aberta.jpg" \
+            "public/produtos/aparador-suspenso-60cm.jpg"
+
+          download \
+            "https://www.saldaodoserjao.com/products/penteadeira-swift/swift1.webp" \
+            "public/produtos/penteadeira-swift-suspensa-60cm.webp"
+
+          file public/produtos/sapateira-organizadora-swift-3-gavetas.webp
+          file public/produtos/prateleira-flutuante-madeira-macica.webp
+          file public/produtos/prateleira-aparadora-16x45.webp
+          file public/produtos/aparador-suspenso-60cm.jpg
+          file public/produtos/penteadeira-swift-suspensa-60cm.webp
+
+      - name: Remover arquivo temporário, versionar e publicar
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .github/product-images
+          git config user.name "JuliLar Automation"
+          git config user.email "julilarmoveis@gmail.com"
+          git add public/produtos .github/product-images || true
+
+          if git diff --cached --quiet; then
+            echo "As fotos aprovadas já estão publicadas."
+            exit 0
+          fi
+
+          git commit -m "feat: publicar fotos aprovadas dos cinco produtos"
+          git push
