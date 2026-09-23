@@ -1,18 +1,21 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProductBySlug, products } from "@/lib/products";
-import { formatBRL, installmentPrice, availabilityLabel } from "@/lib/format";
+import {
+  formatBRL,
+  installmentPrice,
+  availabilityLabel,
+} from "@/lib/format";
 import { ProductMedia } from "@/components/ProductMedia";
 import { ProductCard } from "@/components/ProductCard";
 import { AddToCartButton } from "@/components/AddToCartButton";
-import { siteConfig } from "@/lib/site-config";
+import { SITE_URL, siteConfig } from "@/lib/site-config";
 
 const GOOGLE_AVAILABILITY: Record<string, string> = {
   in_stock: "https://schema.org/InStock",
   out_of_stock: "https://schema.org/OutOfStock",
   preorder: "https://schema.org/PreOrder",
 };
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://julilarmoveis.com";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -21,11 +24,18 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const product = getProductBySlug(params.slug);
   if (!product) return {};
+
+  const productUrl = `${SITE_URL}/produtos/${product.slug}`;
   return {
     title: `${product.name} | ${siteConfig.brandName}`,
     description: product.shortDescription,
+    alternates: { canonical: productUrl },
     openGraph: {
-      images: [`${siteUrl}${product.image}`],
+      type: "website",
+      url: productUrl,
+      title: product.name,
+      description: product.shortDescription,
+      images: [`${SITE_URL}${product.image}`],
     },
   };
 }
@@ -39,7 +49,7 @@ export default function ProductPage({
   if (!product) notFound();
 
   const related = products
-    .filter((p) => p.slug !== product.slug)
+    .filter((item) => item.slug !== product.slug)
     .slice(0, 4);
 
   const jsonLd = {
@@ -47,19 +57,21 @@ export default function ProductPage({
     "@type": "Product",
     name: product.name,
     description: product.description,
-    image: `${siteUrl}${product.image}`,
+    image: `${SITE_URL}${product.image}`,
     sku: product.sku,
-    url: `${siteUrl}/produtos/${product.slug}`,
+    url: `${SITE_URL}/produtos/${product.slug}`,
     brand: {
       "@type": "Brand",
       name: siteConfig.brandName,
     },
     offers: {
       "@type": "Offer",
-      url: `${siteUrl}/produtos/${product.slug}`,
+      url: `${SITE_URL}/produtos/${product.slug}`,
       priceCurrency: "BRL",
       price: product.price.toFixed(2),
-      availability: GOOGLE_AVAILABILITY[product.availability] ?? "https://schema.org/InStock",
+      availability:
+        GOOGLE_AVAILABILITY[product.availability] ??
+        "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
     },
   };
@@ -91,7 +103,10 @@ export default function ProductPage({
             {product.shortDescription}
           </p>
           <p className="mt-3 flex items-center gap-1.5 text-sm font-medium text-emerald-700">
-            <span className="h-2 w-2 rounded-full bg-emerald-600" aria-hidden />
+            <span
+              className="h-2 w-2 rounded-full bg-emerald-600"
+              aria-hidden
+            />
             {availabilityLabel(product.availability)}
           </p>
 
@@ -101,8 +116,8 @@ export default function ProductPage({
             </p>
             <p className="text-sm text-text-muted">
               ou {product.installments}x de{" "}
-              {installmentPrice(product.price, product.installments)} sem
-              juros no cartão
+              {installmentPrice(product.price, product.installments)} sem juros
+              no cartão
             </p>
           </div>
 
@@ -111,12 +126,13 @@ export default function ProductPage({
           </div>
 
           <div className="mt-8 space-y-2 text-sm text-text-muted">
-            <p>✓ Frete para todo o Brasil</p>
-            <p>✓ Nota fiscal eletrônica em todos os pedidos</p>
+            <p>✓ Entrega conforme a Política de Envio</p>
+            <p>✓ Dados da empresa disponíveis no site</p>
             <p>
-              ✓ {siteConfig.returnDays} dias para troca ou devolução
+              ✓ {siteConfig.returnDays} dias para solicitar o direito de
+              arrependimento
             </p>
-            <p>✓ {siteConfig.warrantyDays} dias de garantia de fábrica</p>
+            <p>✓ {siteConfig.warrantyDays} dias de garantia legal</p>
           </div>
         </div>
       </div>
@@ -149,7 +165,9 @@ export default function ProductPage({
               {product.material}
             </p>
             <p>
-              <span className="font-semibold text-ink">Código do produto: </span>
+              <span className="font-semibold text-ink">
+                Código do produto:{" "}
+              </span>
               {product.sku}
             </p>
           </div>
@@ -161,8 +179,8 @@ export default function ProductPage({
           Você também pode gostar
         </h2>
         <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {related.map((p) => (
-            <ProductCard key={p.slug} product={p} />
+          {related.map((item) => (
+            <ProductCard key={item.slug} product={item} />
           ))}
         </div>
       </div>
