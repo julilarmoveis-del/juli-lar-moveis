@@ -29,4 +29,7 @@ export interface Product {
   availability: Availability;
   sku: string;
   image: string;
+  images?: string[];
+  collection?: string;
+  badge?: string;
 }
