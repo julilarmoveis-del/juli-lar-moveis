@@ -31,7 +31,6 @@ export const products: Product[] = [
       "/produtos/sapateira-niva-slim.webp",
       "/produtos/sapateira-niva-frente.webp",
       "/produtos/sapateira-niva-lateral.webp",
-      "/produtos/sapateira-niva-aberta.webp",
     ],
     imageLabels: [
       "Produto",
@@ -39,7 +38,6 @@ export const products: Product[] = [
       "Perfil slim",
       "Vista frontal",
       "Vista lateral",
-      "Gaveta aberta",
     ],
     collection: "Linha Niva",
   },
