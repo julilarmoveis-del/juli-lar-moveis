@@ -1,6 +1,8 @@
 import { siteConfig } from "@/lib/site-config";
 
 export function WhatsAppButton() {
+  if (!siteConfig.social.whatsapp) return null;
+
   return (
     <a
       href={siteConfig.social.whatsapp}
