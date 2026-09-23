@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   sync-images:
-    name: Baixar e publicar fotos aprovadas
+    name: Criar galeria profissional Linha Niva
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -19,207 +19,265 @@ jobs:
       - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Baixar fotos aprovadas
+      - name: Baixar imagens-base dos produtos
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p public/produtos
+          mkdir -p /tmp/niva-source public/produtos
 
           download() {
             local url="$1"
             local output="$2"
             echo "Baixando $output"
-            curl --fail --location --retry 4 --retry-delay 2               --user-agent "Mozilla/5.0 JuliLarImageSync/2.0"               "$url" --output "$output"
-            test "$(stat -c%s "$output")" -gt 5000
+            curl --fail --location --retry 4 --retry-delay 2               --user-agent "Mozilla/5.0 JuliLarImageSync/3.0"               "$url" --output "$output"
+            test "$(stat -c%s "$output")" -gt 4500
           }
 
-          # Imagens principais já aprovadas
-          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira_main.webp"             "public/produtos/sapateira-organizadora-swift-3-gavetas.webp"
+          # Sapateira — fotos reais do produto
+          download "https://www.saldaodoserjao.com/products/sapateira/sapateira-ambiente-2.webp" "/tmp/niva-source/sap-closed.webp"
+          download "https://www.saldaodoserjao.com/products/sapateira/sapateira_main.webp" "/tmp/niva-source/sap-open.webp"
+          download "https://www.saldaodoserjao.com/products/sapateira/sapateira-frente-20260923.webp" "/tmp/niva-source/sap-front.webp"
+          download "https://www.saldaodoserjao.com/products/sapateira/sapateira-lateral-20260923.webp" "/tmp/niva-source/sap-side.webp"
 
-          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift1.webp"             "public/produtos/penteadeira-swift-suspensa-60cm.webp"
+          # Penteadeira — fotos reais do produto
+          download "https://www.saldaodoserjao.com/products/penteadeira-swift/swift1.webp" "/tmp/niva-source/pent-1.webp"
+          download "https://www.saldaodoserjao.com/products/penteadeira-swift/swift2.webp" "/tmp/niva-source/pent-2.webp"
+          download "https://www.saldaodoserjao.com/products/penteadeira-swift/swift3.webp" "/tmp/niva-source/pent-3.webp"
+          download "https://www.saldaodoserjao.com/products/penteadeira-swift/swift4.webp" "/tmp/niva-source/pent-4.webp"
+          download "https://www.saldaodoserjao.com/products/penteadeira-swift/medidas.webp" "/tmp/niva-source/pent-medidas.webp"
 
-          # Vistas extras — Sapateira
-          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira-frente-20260923.webp"             "public/produtos/sapateira-niva-frente.webp"
+          # Outros produtos atuais da loja
+          download "https://www.saldaodoserjao.com/products/prateleira/prateleira%20madeira%201.webp" "public/produtos/prateleira-flutuante-madeira-macica.webp"
+          download "https://www.saldaodoserjao.com/products/prateleira-aparadora/main.webp" "public/produtos/prateleira-aparadora-16x45.webp"
+          download "https://www.saldaodoserjao.com/products/aparador-suspenso/capa-gaveta-aberta.jpg" "public/produtos/aparador-suspenso-60cm.jpg"
 
-          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira-lateral-20260923.webp"             "public/produtos/sapateira-niva-lateral.webp"
-
-          download             "https://www.saldaodoserjao.com/products/sapateira/sapateira-swift-aberta-clara.webp"             "public/produtos/sapateira-niva-aberta.webp"
-
-          # Vistas extras — Penteadeira
-          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift2.webp"             "public/produtos/penteadeira-niva-vista-2.webp"
-
-          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift3.webp"             "public/produtos/penteadeira-niva-vista-3.webp"
-
-          download             "https://www.saldaodoserjao.com/products/penteadeira-swift/swift4.webp"             "public/produtos/penteadeira-niva-vista-4.webp"
-
-          # Demais produtos já usados pela loja
-          download             "https://www.saldaodoserjao.com/products/prateleira/prateleira%20madeira%201.webp"             "public/produtos/prateleira-flutuante-madeira-macica.webp"
-
-          download             "https://www.saldaodoserjao.com/products/prateleira-aparadora/main.webp"             "public/produtos/prateleira-aparadora-16x45.webp"
-
-          download             "https://www.saldaodoserjao.com/products/aparador-suspenso/capa-gaveta-aberta.jpg"             "public/produtos/aparador-suspenso-60cm.jpg"
-
-      - name: Criar duas artes profissionais por produto
+      - name: Padronizar galeria JuliLar
         shell: bash
         run: |
           set -euo pipefail
           python3 -m pip install --quiet pillow
 
-          cat > /tmp/create_niva_slides.py <<'PY'
-          from PIL import Image, ImageDraw, ImageFont, ImageFilter
+          cat > /tmp/build_julilar_gallery.py <<'PY'
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageOps
           from pathlib import Path
 
-          ROOT = Path("public/produtos")
-          W = H = 1200
+          SRC = Path("/tmp/niva-source")
+          OUT = Path("public/produtos")
+          OUT.mkdir(parents=True, exist_ok=True)
 
-          BG = "#f5eadf"
-          PANEL = "#a98262"
-          PANEL_DARK = "#8f6c51"
-          INK = "#4a2e1d"
-          MUTED = "#725b4c"
-          ACCENT = "#d6a56e"
-          CARD = "#fffaf5"
+          W = H = 1200
+          SAND = "#F8ECE1"
+          SAND_DARK = "#F2DDC8"
+          WHITE = "#FFFDFC"
+          INK = "#141F2D"
+          MUTED = "#8A7F75"
+          BRAND = "#FAAA6E"
+          BRAND_DARK = "#B47A4F"
+          BLUE = "#2F6FC2"
 
           SANS = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
           SANS_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+          SERIF = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
           SERIF_B = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
 
           def font(path, size):
               return ImageFont.truetype(path, size)
 
-          def fit_contain(img, box):
-              x, y, w, h = box
+          def rounded_mask(size, radius):
+              m = Image.new("L", size, 0)
+              d = ImageDraw.Draw(m)
+              d.rounded_rectangle((0, 0, size[0], size[1]), radius=radius, fill=255)
+              return m
+
+          def cover(img, size):
+              return ImageOps.fit(img.convert("RGB"), size, method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+
+          def contain(img, size, bg=WHITE):
               img = img.convert("RGB")
-              scale = min(w / img.width, h / img.height)
-              nw, nh = int(img.width * scale), int(img.height * scale)
-              resized = img.resize((nw, nh), Image.Resampling.LANCZOS)
-              canvas = Image.new("RGB", (w, h), CARD)
-              canvas.paste(resized, ((w - nw)//2, (h - nh)//2))
-              return canvas
+              scale = min(size[0]/img.width, size[1]/img.height)
+              r = img.resize((round(img.width*scale), round(img.height*scale)), Image.Resampling.LANCZOS)
+              c = Image.new("RGB", size, bg)
+              c.paste(r, ((size[0]-r.width)//2, (size[1]-r.height)//2))
+              return c
 
-          def rounded_paste(base, img, box, radius=30):
-              x, y, w, h = box
-              fitted = fit_contain(img, box)
-              mask = Image.new("L", (w, h), 0)
-              md = ImageDraw.Draw(mask)
-              md.rounded_rectangle((0,0,w,h), radius=radius, fill=255)
-              base.paste(fitted, (x,y), mask)
+          def warm_grade(img):
+              img = ImageEnhance.Contrast(img).enhance(1.03)
+              img = ImageEnhance.Color(img).enhance(0.96)
+              return img
 
-          def wrap(draw, text, f, max_width):
-              words = text.split()
-              lines = []
-              line = ""
+          def shadow_card(base, xy, radius=34):
+              x0,y0,x1,y1 = xy
+              sh = Image.new("RGBA", base.size, (0,0,0,0))
+              d = ImageDraw.Draw(sh)
+              d.rounded_rectangle((x0+6,y0+12,x1+6,y1+12), radius=radius, fill=(20,31,45,28))
+              sh = sh.filter(ImageFilter.GaussianBlur(18))
+              return Image.alpha_composite(base.convert("RGBA"), sh).convert("RGB")
+
+          def paste_rounded(base, img, box, radius=30):
+              x,y,w,h = box
+              mask = rounded_mask((w,h), radius)
+              base.paste(img.resize((w,h), Image.Resampling.LANCZOS), (x,y), mask)
+
+          def make_plain(src_path, out_path):
+              src = warm_grade(Image.open(src_path).convert("RGB"))
+              canvas = Image.new("RGB", (W,H), SAND)
+              canvas = shadow_card(canvas, (48,48,1152,1152), 38)
+              photo = cover(src, (1080,1080))
+              paste_rounded(canvas, photo, (60,60,1080,1080), 32)
+              canvas.save(out_path, "WEBP", quality=88, method=6)
+
+          def make_feature(src_path, out_path, title, bullets):
+              src = warm_grade(Image.open(src_path).convert("RGB"))
+              canvas = Image.new("RGB", (W,H), SAND)
+              draw = ImageDraw.Draw(canvas)
+
+              # Foto dominante, com moldura leve JuliLar.
+              canvas = shadow_card(canvas, (430,52,1148,1148), 36)
+              photo = cover(src, (690,1068))
+              paste_rounded(canvas, photo, (446,66,690,1068), 30)
+              draw = ImageDraw.Draw(canvas)
+
+              # Assinatura discreta: diferente do bloco grande do site de referência.
+              draw.rounded_rectangle((58,70,306,118), radius=24, fill=INK)
+              draw.text((82,82), "LINHA NIVA", font=font(SANS_B,22), fill="#FFFFFF")
+
+              tfont = font(SERIF_B, 58)
+              maxw = 330
+              words = title.split()
+              lines, cur = [], ""
               for word in words:
-                  test = word if not line else line + " " + word
-                  if draw.textbbox((0,0), test, font=f)[2] <= max_width:
-                      line = test
+                  test = word if not cur else cur+" "+word
+                  if draw.textbbox((0,0), test, font=tfont)[2] <= maxw:
+                      cur = test
                   else:
-                      if line:
-                          lines.append(line)
-                      line = word
-              if line:
-                  lines.append(line)
-              return lines
-
-          def draw_lines(draw, lines, xy, f, fill, spacing=8):
-              x, y = xy
+                      lines.append(cur); cur = word
+              if cur: lines.append(cur)
+              yy = 175
               for line in lines:
-                  draw.text((x,y), line, font=f, fill=fill)
-                  y += f.size + spacing
-              return y
+                  draw.text((62,yy), line, font=tfont, fill=INK)
+                  yy += 67
 
-          def make_slide(src_path, out_path, headline, subline, features):
-              src = Image.open(src_path).convert("RGB")
-              canvas = Image.new("RGB", (W,H), BG)
-              draw = ImageDraw.Draw(canvas)
+              draw.line((62,yy+16,150,yy+16), fill=BRAND, width=5)
+              yy += 60
 
-              # fundo sutil com sombra suave
-              shadow = Image.new("RGBA", (W,H), (0,0,0,0))
-              sd = ImageDraw.Draw(shadow)
-              sd.rounded_rectangle((502,48,1165,995), radius=38, fill=(70,42,25,28))
-              shadow = shadow.filter(ImageFilter.GaussianBlur(18))
-              canvas = Image.alpha_composite(canvas.convert("RGBA"), shadow).convert("RGB")
-              draw = ImageDraw.Draw(canvas)
+              bfont = font(SANS, 27)
+              for item in bullets:
+                  draw.ellipse((64,yy+8,78,yy+22), fill=BRAND_DARK)
+                  draw.text((94,yy), item, font=bfont, fill=MUTED)
+                  yy += 64
 
-              # painel de marca
-              draw.rounded_rectangle((48,48,455,275), radius=38, fill=PANEL)
-              draw.text((86,78), "LINHA", font=font(SANS,28), fill="#fff7ef")
-              draw.text((82,116), "NIVA", font=font(SANS,72), fill="#fff7ef")
-              draw.line((84,205,175,205), fill="#f6dcc4", width=4)
-              draw.text((84,222), "JULILAR  •  CASA EM EQUILÍBRIO", font=font(SANS,17), fill="#fff7ef")
-
-              # texto principal
-              hf = font(SERIF_B, 68)
-              lines = wrap(draw, headline, hf, 390)
-              y = draw_lines(draw, lines, (60,330), hf, INK, spacing=3)
-              draw.line((62,y+10,145,y+10), fill=ACCENT, width=5)
-              sf = font(SANS, 31)
-              slines = wrap(draw, subline, sf, 390)
-              draw_lines(draw, slines, (62,y+42), sf, MUTED, spacing=8)
-
-              # imagem
-              rounded_paste(canvas, src, (505,55,650,915), radius=34)
-
-              # barra de atributos
-              draw.rounded_rectangle((50,1000,1150,1135), radius=42, fill=CARD)
-              col_w = 1100 // 3
-              ff = font(SANS_B, 24)
-              for i, feat in enumerate(features):
-                  cx = 50 + i*col_w
-                  if i > 0:
-                      draw.line((cx,1027,cx,1108), fill="#dcc2a8", width=2)
-                  circle_x = cx + 38
-                  draw.ellipse((circle_x,1031,circle_x+70,1101), outline=PANEL_DARK, width=3)
-                  draw.text((circle_x+22,1047), str(i+1), font=font(SANS_B, 26), fill=PANEL_DARK)
-                  flines = wrap(draw, feat, ff, 235)
-                  draw_lines(draw, flines, (circle_x+95,1040), ff, INK, spacing=4)
-
-              # rodapé
-              draw.line((245,1172,335,1172), fill=PANEL_DARK, width=2)
-              draw.line((865,1172,955,1172), fill=PANEL_DARK, width=2)
-              footer = "JULILAR — UM LAR MAIS PRÁTICO PARA VOCÊ"
-              ffoot = font(SANS, 17)
-              bbox = draw.textbbox((0,0), footer, font=ffoot)
-              draw.text(((W-(bbox[2]-bbox[0]))/2,1158), footer, font=ffoot, fill=MUTED)
+              draw.text((62,1082), "JULILAR OFERTAS", font=font(SANS_B,16), fill=BRAND_DARK)
+              draw.text((62,1110), "design leve • informação clara", font=font(SANS,15), fill=MUTED)
 
               canvas.save(out_path, "WEBP", quality=89, method=6)
 
-          make_slide(
-              ROOT/"sapateira-organizadora-swift-3-gavetas.webp",
-              ROOT/"sapateira-niva-tudo-no-lugar.webp",
-              "Tudo no lugar.",
-              "3 gavetas basculantes para organizar o dia a dia.",
-              ["3 gavetas", "Até 12 pares", "Acesso prático"],
+          def make_sap_technical(src_path, out_path):
+              src = warm_grade(Image.open(src_path).convert("RGB"))
+              # Recorte do produto fechado no ambiente real, sem reproduzir o layout do site de referência.
+              crop = src.crop((300, 205, 900, 1045))
+              product = contain(crop, (640, 900), bg=WHITE)
+
+              canvas = Image.new("RGB", (W,H), "#FFFDFC")
+              draw = ImageDraw.Draw(canvas)
+              draw.rounded_rectangle((35,35,1165,1165), radius=38, fill=SAND)
+              draw.rounded_rectangle((485,120,1125,1020), radius=30, fill=WHITE)
+              paste_rounded(canvas, product, (485,120,640,900), 30)
+              draw = ImageDraw.Draw(canvas)
+
+              draw.rounded_rectangle((62,62,300,110), radius=24, fill=INK)
+              draw.text((87,74), "MEDIDAS TÉCNICAS", font=font(SANS_B,20), fill="#FFFFFF")
+              draw.text((62,165), "Sapateira Niva", font=font(SERIF_B,48), fill=INK)
+              draw.text((62,225), "perfil slim", font=font(SANS,25), fill=MUTED)
+
+              # Linhas técnicas finas em azul, conforme o padrão pedido.
+              line_w = 3
+              # altura
+              x = 450; y0=180; y1=980
+              draw.line((x,y0,x,y1), fill=BLUE, width=line_w)
+              draw.polygon([(x,y0-13),(x-8,y0+2),(x+8,y0+2)], fill=BLUE)
+              draw.polygon([(x,y1+13),(x-8,y1-2),(x+8,y1-2)], fill=BLUE)
+              draw.text((110,470), "110 cm", font=font(SANS_B,42), fill=BLUE)
+              draw.text((111,518), "ALTURA", font=font(SANS,21), fill=BLUE)
+              # largura
+              x0=515; x1=1084; y=1050
+              draw.line((x0,y,x1,y), fill=BLUE, width=line_w)
+              draw.polygon([(x0-13,y),(x0+2,y-8),(x0+2,y+8)], fill=BLUE)
+              draw.polygon([(x1+13,y),(x1-2,y-8),(x1-2,y+8)], fill=BLUE)
+              draw.text((710,1070), "67 cm  LARGURA", font=font(SANS,24), fill=BLUE)
+              # profundidade
+              draw.line((1015,1030,1098,972), fill=BLUE, width=line_w)
+              draw.polygon([(1108,965),(1093,970),(1101,981)], fill=BLUE)
+              draw.text((902,1098), "14 cm", font=font(SANS_B,30), fill=BLUE)
+              draw.text((903,1134), "PROFUNDIDADE", font=font(SANS,18), fill=BLUE)
+
+              draw.text((62,1035), "67 × 110 × 14 cm", font=font(SANS_B,26), fill=INK)
+              draw.text((62,1075), "L × A × P", font=font(SANS,18), fill=MUTED)
+
+              canvas.save(out_path, "WEBP", quality=90, method=6)
+
+          def make_pent_technical(src_path, out_path):
+              src = Image.open(src_path).convert("RGB")
+              canvas = Image.new("RGB", (W,H), SAND)
+              draw = ImageDraw.Draw(canvas)
+
+              draw.rounded_rectangle((52,52,1148,1148), radius=38, fill=WHITE)
+              draw.rounded_rectangle((78,78,320,126), radius=24, fill=INK)
+              draw.text((101,90), "MEDIDAS TÉCNICAS", font=font(SANS_B,20), fill="#FFFFFF")
+              draw.text((82,166), "Penteadeira Niva", font=font(SERIF_B,46), fill=INK)
+              draw.text((82,226), "compacta e suspensa", font=font(SANS,24), fill=MUTED)
+
+              # O desenho técnico original é neutro; recebe uma moldura JuliLar própria.
+              tech = contain(src, (900,760), bg="#FFFFFF")
+              paste_rounded(canvas, tech, (150,300,900,760), 20)
+              draw = ImageDraw.Draw(canvas)
+
+              # Linha de especificações fina em azul, sem copiar a composição do outro site.
+              draw.line((180,1085,1020,1085), fill=BLUE, width=2)
+              specs = [("60 cm","LARGURA"),("30 cm","PROFUNDIDADE"),("14 cm","ALTURA")]
+              xs = [260,600,910]
+              for (val,label),cx in zip(specs,xs):
+                  draw.text((cx-55,1100), val, font=font(SANS_B,24), fill=BLUE)
+                  draw.text((cx-55,1132), label, font=font(SANS,14), fill=BLUE)
+
+              canvas.save(out_path, "WEBP", quality=90, method=6)
+
+          # 4 fotos sem texto — Sapateira
+          make_plain(SRC/"sap-closed.webp", OUT/"sapateira-niva-produto-01.webp")
+          make_plain(SRC/"sap-open.webp",   OUT/"sapateira-niva-produto-02.webp")
+          make_plain(SRC/"sap-front.webp",  OUT/"sapateira-niva-produto-03.webp")
+          make_plain(SRC/"sap-side.webp",   OUT/"sapateira-niva-produto-04.webp")
+
+          # 2 imagens informativas — Sapateira
+          make_feature(
+              SRC/"sap-open.webp",
+              OUT/"sapateira-niva-destaques.webp",
+              "Organização sem pesar no ambiente.",
+              ["3 gavetas basculantes", "até 12 pares", "apenas 14 cm de profundidade"],
           )
-          make_slide(
-              ROOT/"sapateira-niva-lateral.webp",
-              ROOT/"sapateira-niva-slim.webp",
-              "Slim de verdade.",
-              "67 cm largura • 110 cm altura • 14 cm profundidade.",
-              ["Perfil slim", "Ambientes compactos", "Visual clean"],
+          make_sap_technical(SRC/"sap-closed.webp", OUT/"sapateira-niva-medidas.webp")
+
+          # 4 fotos sem texto — Penteadeira
+          make_plain(SRC/"pent-1.webp", OUT/"penteadeira-niva-produto-01.webp")
+          make_plain(SRC/"pent-2.webp", OUT/"penteadeira-niva-produto-02.webp")
+          make_plain(SRC/"pent-3.webp", OUT/"penteadeira-niva-produto-03.webp")
+          make_plain(SRC/"pent-4.webp", OUT/"penteadeira-niva-produto-04.webp")
+
+          # 2 imagens informativas — Penteadeira
+          make_feature(
+              SRC/"pent-1.webp",
+              OUT/"penteadeira-niva-destaques.webp",
+              "Um canto leve e funcional.",
+              ["gaveta ampla", "trilho telescópico", "instalação suspensa"],
           )
-          make_slide(
-              ROOT/"penteadeira-swift-suspensa-60cm.webp",
-              ROOT/"penteadeira-niva-mais-espaco.webp",
-              "Mais espaço na gaveta.",
-              "Compacta, funcional e pronta para o dia a dia.",
-              ["Gaveta ampla", "Trilho telescópico", "Instalação suspensa"],
-          )
-          make_slide(
-              ROOT/"penteadeira-niva-vista-2.webp",
-              ROOT/"penteadeira-niva-medidas-profissional.webp",
-              "Medidas que se encaixam.",
-              "60 cm largura • 14 cm altura • 30 cm profundidade.",
-              ["MDF branco", "Gaveta ampla", "Instalação suspensa"],
-          )
+          make_pent_technical(SRC/"pent-medidas.webp", OUT/"penteadeira-niva-medidas.webp")
           PY
 
-          python3 /tmp/create_niva_slides.py
+          python3 /tmp/build_julilar_gallery.py
 
-          file public/produtos/sapateira-niva-tudo-no-lugar.webp
-          file public/produtos/sapateira-niva-slim.webp
-          file public/produtos/penteadeira-niva-mais-espaco.webp
-          file public/produtos/penteadeira-niva-medidas-profissional.webp
+          file public/produtos/sapateira-niva-produto-01.webp
+          file public/produtos/sapateira-niva-medidas.webp
+          file public/produtos/penteadeira-niva-produto-01.webp
+          file public/produtos/penteadeira-niva-medidas.webp
 
       - name: Versionar e publicar
         shell: bash
@@ -230,9 +288,9 @@ jobs:
           git add public/produtos
 
           if git diff --cached --quiet; then
-            echo "As fotos aprovadas já estão publicadas."
+            echo "A galeria profissional já está publicada."
             exit 0
           fi
 
-          git commit -m "feat: publicar galeria profissional Linha Niva"
+          git commit -m "feat: padronizar fotos profissionais da Linha Niva"
           git push
