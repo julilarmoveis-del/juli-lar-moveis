@@ -1,18 +1,20 @@
-import { Product } from "@/types/product";
+import type { Product } from "@/types/product";
 
 export const products: Product[] = [
   {
     slug: "sapateira-organizadora-swift-3-gavetas",
     name: "Sapateira Organizadora Swift 3 Gavetas",
     shortDescription:
-      "Sapateira slim branca com 3 gavetas basculantes para até 12 pares.",
+      "Sapateira slim da Linha Swift, com 3 gavetas basculantes e apenas 14 cm de profundidade.",
     description:
-      "Com apenas 14 cm de profundidade, a Sapateira Organizadora Swift foi projetada para organizar os calçados ocupando pouco espaço em corredores, halls de entrada, quartos e closets. Possui três gavetas basculantes, acabamento branco e é enviada montada. A fixação na parede é realizada pelo cliente com as buchas e os parafusos que acompanham o produto.",
+      "A Sapateira Organizadora Swift faz parte da Linha Swift, criada para aproveitar melhor ambientes compactos sem abrir mão de organização e visual clean. Com 67 cm de largura, 110 cm de altura e apenas 14 cm de profundidade, ela se encaixa muito bem em quartos, closets, corredores e halls de entrada. As três gavetas basculantes acomodam até 12 pares de calçados, mantendo tudo protegido e fácil de acessar. O produto é enviado montado e acompanha buchas e parafusos para fixação na parede.",
     features: [
+      "Linha Swift — design compacto e funcional",
       "3 gavetas basculantes para até 12 pares — 4 pares por gaveta",
+      "Profundidade slim de apenas 14 cm",
       "Produto enviado montado",
       "Fixação na parede com buchas e parafusos inclusos",
-      "Profundidade slim de 14 cm",
+      "Ideal para quarto, closet, corredor e hall de entrada",
     ],
     price: 187.9,
     installments: 6,
@@ -23,6 +25,13 @@ export const products: Product[] = [
     availability: "in_stock",
     sku: "JL-SWT-101",
     image: "/produtos/sapateira-organizadora-swift-3-gavetas.webp",
+    images: [
+      "/produtos/sapateira-organizadora-swift-3-gavetas.webp",
+      "/produtos/sapateira-slim-basculante-3-compartimentos.webp",
+      "/produtos/sapateira-swift-medidas.svg",
+      "/produtos/sapateira-swift-organizacao.svg",
+    ],
+    collection: "Linha Swift",
   },
   {
     slug: "prateleira-flutuante-madeira-macica",
@@ -95,16 +104,18 @@ export const products: Product[] = [
   },
   {
     slug: "penteadeira-swift-suspensa-60cm",
-    name: "Penteadeira Swift Suspensa 60cm",
+    name: "Penteadeira Swift Suspensa 60cm em MDF",
     shortDescription:
-      "Penteadeira branca em MDF com gaveta grande e trilho telescópico.",
+      "Penteadeira compacta da Linha Swift, com gaveta grande de correr e trilho telescópico.",
     description:
-      "Penteadeira suspensa compacta, produzida em MDF branco e equipada com uma gaveta grande de correr. O trilho telescópico metálico permite abertura ampla e suave, facilitando a organização de maquiagens, perfumes e acessórios. A instalação suspensa aproveita melhor o espaço e deixa a limpeza do piso mais simples.",
+      "A Penteadeira Swift Suspensa 60cm integra a Linha Swift e foi pensada para criar um cantinho de maquiagem funcional mesmo em quartos menores. Produzida em MDF branco, possui uma gaveta grande de correr para organizar maquiagens, perfumes, acessórios e objetos pessoais. O trilho telescópico metálico permite abertura ampla e suave da gaveta, enquanto a instalação suspensa libera o piso e deixa o ambiente visualmente mais leve e fácil de limpar.",
     features: [
+      "Linha Swift — visual clean e aproveitamento inteligente do espaço",
       "1 gaveta grande de correr",
-      "Trilho telescópico metálico",
+      "Trilho telescópico metálico com abertura ampla e suave",
       "Estrutura em MDF branco",
       "Instalação suspensa na parede",
+      "Ideal para quarto, closet e cantinho de maquiagem",
     ],
     price: 64.9,
     installments: 6,
@@ -115,6 +126,12 @@ export const products: Product[] = [
     availability: "in_stock",
     sku: "JL-PTS-105",
     image: "/produtos/penteadeira-swift-suspensa-60cm.webp",
+    images: [
+      "/produtos/penteadeira-swift-suspensa-60cm.webp",
+      "/produtos/penteadeira-swift-medidas.svg",
+      "/produtos/penteadeira-swift-gaveta.svg",
+    ],
+    collection: "Linha Swift",
   },
 ];
 
