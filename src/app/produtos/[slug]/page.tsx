@@ -10,12 +10,19 @@ import { ProductMedia } from "@/components/ProductMedia";
 import { ProductCard } from "@/components/ProductCard";
 import { AddToCartButton } from "@/components/AddToCartButton";
 import { SITE_URL, siteConfig } from "@/lib/site-config";
+import type { Product } from "@/types/product";
 
 const GOOGLE_AVAILABILITY: Record<string, string> = {
   in_stock: "https://schema.org/InStock",
   out_of_stock: "https://schema.org/OutOfStock",
   preorder: "https://schema.org/PreOrder",
 };
+
+function publicImage(product: Product) {
+  return product.image.startsWith("render:")
+    ? `${SITE_URL}/logo.png`
+    : `${SITE_URL}${product.image}`;
+}
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -35,7 +42,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
       url: productUrl,
       title: product.name,
       description: product.shortDescription,
-      images: [`${SITE_URL}${product.image}`],
+      images: [publicImage(product)],
     },
   };
 }
@@ -50,6 +57,7 @@ export default function ProductPage({
 
   const related = products
     .filter((item) => item.slug !== product.slug)
+    .sort((a, b) => Number(b.category === product.category) - Number(a.category === product.category))
     .slice(0, 4);
 
   const jsonLd = {
@@ -57,7 +65,7 @@ export default function ProductPage({
     "@type": "Product",
     name: product.name,
     description: product.description,
-    image: `${SITE_URL}${product.image}`,
+    image: publicImage(product),
     sku: product.sku,
     url: `${SITE_URL}/produtos/${product.slug}`,
     brand: {
@@ -96,6 +104,11 @@ export default function ProductPage({
         </div>
 
         <div>
+          {product.badge && (
+            <span className="mb-3 inline-flex rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
+              {product.badge}
+            </span>
+          )}
           <h1 className="font-heading text-2xl font-bold text-ink sm:text-3xl">
             {product.name}
           </h1>
@@ -145,6 +158,12 @@ export default function ProductPage({
           <p className="mt-3 text-sm leading-relaxed text-text-muted">
             {product.description}
           </p>
+          {product.image.startsWith("render:") && (
+            <p className="mt-3 text-xs text-text-muted">
+              Imagem em render ilustrativo exclusivo da loja. Confira medidas,
+              materiais e características descritas nesta página.
+            </p>
+          )}
         </div>
         <div>
           <h2 className="font-heading text-lg font-semibold text-ink">
