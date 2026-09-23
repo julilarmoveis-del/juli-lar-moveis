@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+<rect width="1200" height="1200" fill="#f3eee7"/>
+<rect x="70" y="70" width="1060" height="1060" rx="38" fill="#fff"/>
+<rect x="85" y="85" width="325" height="165" fill="#0F2A52"/>
+<text x="125" y="150" font-family="Arial,sans-serif" font-size="52" fill="#fff" letter-spacing="7">LINHA</text>
+<text x="125" y="218" font-family="Arial,sans-serif" font-size="68" fill="#fff" letter-spacing="5">SWIFT</text>
+<text x="95" y="360" font-family="Georgia,serif" font-size="58" font-weight="700" fill="#0F2A52">Organização sem excesso.</text>
+<text x="95" y="420" font-family="Arial,sans-serif" font-size="31" fill="#475569">3 gavetas basculantes para até 12 pares.</text>
+<g transform="translate(250 475)">
+<rect x="140" y="0" width="420" height="500" rx="14" fill="#fafafa" stroke="#c2c2c2" stroke-width="5"/>
+<g>
+<path d="M160 55 L540 55 L505 175 L195 175 Z" fill="#f0f0f0" stroke="#bcbcbc" stroke-width="4"/>
+<path d="M220 130 q48-55 96 0 M360 130 q48-55 96 0" fill="none" stroke="#a86f4b" stroke-width="24" stroke-linecap="round"/>
+<path d="M160 200 L540 200 L505 320 L195 320 Z" fill="#f0f0f0" stroke="#bcbcbc" stroke-width="4"/>
+<path d="M220 275 q48-55 96 0 M360 275 q48-55 96 0" fill="none" stroke="#a86f4b" stroke-width="24" stroke-linecap="round"/>
+<path d="M160 345 L540 345 L505 465 L195 465 Z" fill="#f0f0f0" stroke="#bcbcbc" stroke-width="4"/>
+<path d="M220 420 q48-55 96 0 M360 420 q48-55 96 0" fill="none" stroke="#a86f4b" stroke-width="24" stroke-linecap="round"/>
+</g>
+</g>
+<g font-family="Arial,sans-serif" text-anchor="middle">
+<circle cx="235" cy="1040" r="52" fill="#0F2A52"/><text x="235" y="1052" font-size="34" fill="#fff">3</text>
+<text x="235" y="1115" font-size="26" fill="#0F2A52">gavetas</text>
+<circle cx="600" cy="1040" r="52" fill="#0F2A52"/><text x="600" y="1052" font-size="30" fill="#fff">12</text>
+<text x="600" y="1115" font-size="26" fill="#0F2A52">pares</text>
+<circle cx="965" cy="1040" r="52" fill="#0F2A52"/><text x="965" y="1050" font-size="24" fill="#fff">14cm</text>
+<text x="965" y="1115" font-size="26" fill="#0F2A52">slim</text>
+</g>
+</svg>
