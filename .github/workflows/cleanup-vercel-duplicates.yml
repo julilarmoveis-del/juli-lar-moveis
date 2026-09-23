@@ -1,126 +1,14 @@
-name: Limpar projetos duplicados da Vercel
+name: Limpeza da Vercel concluída
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/cleanup-vercel-duplicates.yml"
-      - ".github/vercel-cleanup-trigger.txt"
 
 permissions:
   contents: read
 
 jobs:
-  cleanup:
-    name: Apagar somente duplicados autorizados
+  status:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      TEAM_ID: team_g7oIB0teRPGb5iMKfOMGlgX5
-      KEEP_JULILAR_ID: prj_LyVHyWOseic3fsmL8O4HoY81p5zz
-      KEEP_VOLUMI_ID: prj_v4KVJ5k2DDRMteyc50YyUJukMxwT
-
     steps:
-      - name: Conferir autorização da API
-        id: auth
-        shell: bash
-        run: |
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=Token pendente::Adicione VERCEL_TOKEN em Settings > Secrets and variables > Actions para executar a limpeza autorizada."
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Verificar e apagar os cinco projetos duplicados
-        if: steps.auth.outputs.ready == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          declare -A TARGETS=(
-            [prj_nA7zJAiRKsSBtwaykReMQTphxIAp]="juli-lar-moveis"
-            [prj_FzTprVeUiJqgckBzuABSW48idoqe]="julilar-deploy"
-            [prj_CbJpmWkNCfqJil8WLJngpCrEWOeO]="julilar-ofertas-final"
-            [prj_bIpc4VrjwLA6yEyApVTYNTeqvsJo]="julilar-ofertas"
-            [prj_eZE8SegOqGAXwEp4aik14m8Z2mvY]="juli-lar-moveis-site"
-          )
-
-          api() {
-            curl --fail-with-body --silent --show-error \
-              --header "Authorization: Bearer $VERCEL_TOKEN" \
-              --header "Content-Type: application/json" \
-              "$@"
-          }
-
-          for project_id in "${!TARGETS[@]}"; do
-            expected_name="${TARGETS[$project_id]}"
-
-            if [ "$project_id" = "$KEEP_JULILAR_ID" ] || [ "$project_id" = "$KEEP_VOLUMI_ID" ]; then
-              echo "Proteção acionada: tentativa de incluir projeto preservado."
-              exit 1
-            fi
-
-            project_json="$(api "https://api.vercel.com/v9/projects/$project_id?teamId=$TEAM_ID")"
-            actual_id="$(jq -r '.id // empty' <<< "$project_json")"
-            actual_name="$(jq -r '.name // empty' <<< "$project_json")"
-
-            if [ "$actual_id" != "$project_id" ] || [ "$actual_name" != "$expected_name" ]; then
-              echo "Proteção acionada: projeto $project_id não corresponde a $expected_name."
-              exit 1
-            fi
-
-            domains_json="$(api "https://api.vercel.com/v9/projects/$project_id/domains?teamId=$TEAM_ID")"
-            protected_domain="$(jq -r '.domains[]?.name | select(. == "julilarofertas.com" or . == "www.julilarofertas.com")' <<< "$domains_json" | head -n 1)"
-            if [ -n "$protected_domain" ]; then
-              echo "Proteção acionada: $actual_name possui o domínio protegido $protected_domain."
-              exit 1
-            fi
-
-            http_code="$(curl --silent --show-error \
-              --output "/tmp/delete-$project_id.json" \
-              --write-out '%{http_code}' \
-              --request DELETE \
-              --header "Authorization: Bearer $VERCEL_TOKEN" \
-              --header "Content-Type: application/json" \
-              "https://api.vercel.com/v9/projects/$project_id?teamId=$TEAM_ID")"
-
-            if [ "$http_code" != "204" ]; then
-              echo "Falha ao apagar $actual_name (HTTP $http_code)."
-              cat "/tmp/delete-$project_id.json" || true
-              exit 1
-            fi
-
-            echo "Apagado: $actual_name ($project_id)"
-          done
-
-      - name: Confirmar projetos preservados
-        if: steps.auth.outputs.ready == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          projects_json="$(curl --fail-with-body --silent --show-error \
-            --header "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects?teamId=$TEAM_ID&limit=50")"
-
-          for keep_id in "$KEEP_JULILAR_ID" "$KEEP_VOLUMI_ID"; do
-            if ! jq -e --arg id "$keep_id" '.projects[] | select(.id == $id)' <<< "$projects_json" >/dev/null; then
-              echo "Projeto preservado não encontrado: $keep_id"
-              exit 1
-            fi
-          done
-
-          for deleted_id in \
-            prj_nA7zJAiRKsSBtwaykReMQTphxIAp \
-            prj_FzTprVeUiJqgckBzuABSW48idoqe \
-            prj_CbJpmWkNCfqJil8WLJngpCrEWOeO \
-            prj_bIpc4VrjwLA6yEyApVTYNTeqvsJo \
-            prj_eZE8SegOqGAXwEp4aik14m8Z2mvY; do
-            if jq -e --arg id "$deleted_id" '.projects[] | select(.id == $id)' <<< "$projects_json" >/dev/null; then
-              echo "O duplicado ainda existe: $deleted_id"
-              exit 1
-            fi
-          done
-
-          echo "Limpeza concluída. Preservados: julilar-deploy-novo e volumi-moveis."
+      - name: Confirmar conclusão
+        run: echo "Os projetos duplicados da JuliLar já foram removidos. Mantidos somente julilar-deploy-novo e volumi-moveis."
