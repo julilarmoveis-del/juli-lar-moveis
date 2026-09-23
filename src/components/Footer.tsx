@@ -19,7 +19,7 @@ export function Footer() {
             JuliLar <span className="text-brand-light">Ofertas</span>
           </p>
           <p className="mt-2 text-sm text-sand/70">{siteConfig.tagline}</p>
-          <div className="mt-4 flex gap-3 text-sm">
+          <div className="mt-4 flex flex-wrap gap-3 text-sm">
             <a
               href={siteConfig.social.instagram}
               target="_blank"
@@ -28,14 +28,16 @@ export function Footer() {
             >
               Instagram
             </a>
-            <a
-              href={siteConfig.social.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full bg-white/10 px-3 py-1 hover:bg-white/20"
-            >
-              WhatsApp
-            </a>
+            {siteConfig.social.whatsapp && (
+              <a
+                href={siteConfig.social.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-white/10 px-3 py-1 hover:bg-white/20"
+              >
+                WhatsApp
+              </a>
+            )}
           </div>
         </div>
 
@@ -59,8 +61,14 @@ export function Footer() {
             Atendimento
           </p>
           <ul className="mt-3 space-y-2 text-sm text-sand/70">
-            <li>{siteConfig.email}</li>
-            <li>WhatsApp: {siteConfig.whatsappDisplay}</li>
+            <li>
+              <a href={`mailto:${siteConfig.email}`} className="hover:text-white">
+                {siteConfig.email}
+              </a>
+            </li>
+            {siteConfig.whatsappDisplay && (
+              <li>WhatsApp: {siteConfig.whatsappDisplay}</li>
+            )}
             <li>{siteConfig.serviceHours}</li>
           </ul>
         </div>
@@ -75,7 +83,7 @@ export function Footer() {
             <li>{siteConfig.address}</li>
           </ul>
           <p className="mt-3 text-xs text-sand/50">
-            Formas de pagamento: Pix, Visa, Mastercard
+            Pagamento online processado em ambiente seguro.
           </p>
         </div>
       </div>
