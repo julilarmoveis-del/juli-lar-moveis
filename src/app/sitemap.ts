@@ -1,9 +1,8 @@
 import { MetadataRoute } from "next";
 import { products } from "@/lib/products";
+import { SITE_URL } from "@/lib/site-config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://julilarmoveis.com";
-
   const staticRoutes = [
     "",
     "/sobre",
@@ -16,12 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/politicas/termos",
     "/politicas/cookies",
   ].map((route) => ({
-    url: `${siteUrl}${route}`,
+    url: `${SITE_URL}${route}`,
     lastModified: new Date(),
   }));
 
   const productRoutes = products.map((product) => ({
-    url: `${siteUrl}/produtos/${product.slug}`,
+    url: `${SITE_URL}/produtos/${product.slug}`,
     lastModified: new Date(),
   }));
 
