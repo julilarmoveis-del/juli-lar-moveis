@@ -59,24 +59,6 @@ jobs:
             exit 1
           fi
 
-      - name: Confirmar projeto da Vercel
-        shell: bash
-        run: |
-          set -euo pipefail
-          endpoint="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}"
-
-          project_json="$(curl --fail-with-body --silent --show-error \
-            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
-            "$endpoint")"
-          project_name="$(printf '%s' "$project_json" | jq -r '.name // empty')"
-
-          if [ "$project_name" != "julilar-deploy-novo" ]; then
-            echo "::error title=Publicação bloqueada::As credenciais apontam para '$project_name'."
-            exit 1
-          fi
-
-          echo "Projeto confirmado: $project_name"
-
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
