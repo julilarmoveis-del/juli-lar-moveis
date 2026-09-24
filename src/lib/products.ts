@@ -1,4 +1,5 @@
 import type { Product } from "@/types/product";
+// deploy-sync: 2026-09-24T15:25-03:00
 
 export const products: Product[] = [
   {
