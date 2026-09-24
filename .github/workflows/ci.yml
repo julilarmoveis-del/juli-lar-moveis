@@ -59,7 +59,7 @@ jobs:
             exit 1
           fi
 
-      - name: Confirmar projeto e corrigir comando de build
+      - name: Confirmar projeto da Vercel
         shell: bash
         run: |
           set -euo pipefail
@@ -75,14 +75,7 @@ jobs:
             exit 1
           fi
 
-          curl --fail-with-body --silent --show-error \
-            --request PATCH \
-            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
-            --header "Content-Type: application/json" \
-            --data '{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm install","nodeVersion":"22.x"}' \
-            "$endpoint" >/dev/null
-
-          echo "Projeto confirmado e configuração de build corrigida: $project_name"
+          echo "Projeto confirmado: $project_name"
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
