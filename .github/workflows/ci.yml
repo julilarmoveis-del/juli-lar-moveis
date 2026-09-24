@@ -11,7 +11,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   build:
@@ -44,52 +43,46 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: team_g7oIB0teRPGb5iMKfOMGlgX5
       VERCEL_PROJECT_ID: prj_LyVHyWOseic3fsmL8O4HoY81p5zz
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Obter identidade segura do GitHub
-        id: oidc
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const token = await core.getIDToken()
-            core.setSecret(token)
-            core.setOutput('token', token)
-
-      - name: Trocar identidade por token temporário da Vercel
+      - name: Conferir autorização
         shell: bash
-        env:
-          GITHUB_OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
         run: |
           set -euo pipefail
-          response="$(curl --fail-with-body --silent --show-error \
-            --request POST "https://api.vercel.com/login/oauth/token" \
-            --data "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
-            --data "client_id=cl_kyUx2zVvA4MGptBohkmtYHJly2XltXzD" \
-            --data "subject_token_type=urn:ietf:params:oauth:token-type:id_token" \
-            --data "requested_token_type=urn:ietf:params:oauth:token-type:access_token" \
-            --data-urlencode "team_id_or_slug=${VERCEL_ORG_ID}" \
-            --data-urlencode "subject_token=${GITHUB_OIDC_TOKEN}")"
-
-          token="$(printf '%s' "$response" | jq -r '.access_token // empty')"
-          if [ -z "$token" ]; then
-            echo "::error title=Autorização Vercel::A troca OIDC não retornou um token."
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error title=Token ausente::O segredo VERCEL_TOKEN não está configurado."
             exit 1
           fi
 
-          echo "::add-mask::$token"
-          echo "VERCEL_TOKEN=$token" >> "$GITHUB_ENV"
-
-      - name: Confirmar acesso ao projeto
+      - name: Confirmar projeto e corrigir comando de build
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail-with-body --silent --show-error \
+          endpoint="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}"
+
+          project_json="$(curl --fail-with-body --silent --show-error \
             --header "Authorization: Bearer ${VERCEL_TOKEN}" \
-            "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}" >/dev/null
+            "$endpoint")"
+          project_name="$(printf '%s' "$project_json" | jq -r '.name // empty')"
+
+          if [ "$project_name" != "julilar-deploy-novo" ]; then
+            echo "::error title=Publicação bloqueada::As credenciais apontam para '$project_name'."
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error \
+            --request PATCH \
+            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm install","nodeVersion":"22.x"}' \
+            "$endpoint" >/dev/null
+
+          echo "Projeto confirmado e configuração de build corrigida: $project_name"
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
