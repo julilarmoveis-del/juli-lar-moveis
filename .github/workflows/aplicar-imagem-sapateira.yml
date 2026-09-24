@@ -1,0 +1,29 @@
+name: Aplicar imagem técnica da sapateira
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  aplicar:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Substituir imagem de medidas da Sapateira Niva
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .tmp/sapateira-medidas.b64.part1 .tmp/sapateira-medidas.b64.part2 .tmp/sapateira-medidas.b64.part3 | base64 --decode > public/produtos/sapateira-niva-medidas.webp
+          echo "ec9b1583cb75230270ebeb3185f83fb4f22aa0423debafb3f832cdc3d5008fcb  public/produtos/sapateira-niva-medidas.webp" | sha256sum -c -
+          rm -f .tmp/sapateira-medidas.b64.part1 .tmp/sapateira-medidas.b64.part2 .tmp/sapateira-medidas.b64.part3
+          rm -f .github/workflows/aplicar-imagem-sapateira.yml
+          rmdir .tmp 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Substitui imagem de medidas técnicas da Sapateira Niva"
+          git push
