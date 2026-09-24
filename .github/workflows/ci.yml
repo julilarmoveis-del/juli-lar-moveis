@@ -1,4 +1,4 @@
-name: Validar e publicar loja
+name: Validar loja
 
 on:
   push:
@@ -35,70 +35,3 @@ jobs:
 
       - name: Gerar build de produção
         run: npm run build
-
-  deploy:
-    name: Publicar na Vercel
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: team_g7oIB0teRPGb5iMKfOMGlgX5
-      VERCEL_PROJECT_ID: prj_LyVHyWOseic3fsmL8O4HoY81p5zz
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-
-      - name: Conferir autorização
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "::error title=Token ausente::O segredo VERCEL_TOKEN não está configurado."
-            exit 1
-          fi
-
-      - name: Confirmar projeto e corrigir comando de build
-        shell: bash
-        run: |
-          set -euo pipefail
-          endpoint="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}"
-
-          project_json="$(curl --fail-with-body --silent --show-error \
-            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
-            "$endpoint")"
-          project_name="$(printf '%s' "$project_json" | jq -r '.name // empty')"
-
-          if [ "$project_name" != "julilar-deploy-novo" ]; then
-            echo "::error title=Publicação bloqueada::As credenciais apontam para '$project_name'."
-            exit 1
-          fi
-
-          curl --fail-with-body --silent --show-error \
-            --request PATCH \
-            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
-            --header "Content-Type: application/json" \
-            --data '{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm install","nodeVersion":"22.x"}' \
-            "$endpoint" >/dev/null
-
-          echo "Projeto confirmado e configuração de build corrigida: $project_name"
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: package.json
-
-      - name: Instalar dependências
-        run: npm install --no-audit --no-fund
-
-      - name: Carregar configuração da Vercel
-        run: npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-
-      - name: Gerar build da Vercel
-        run: npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
-
-      - name: Publicar em produção
-        run: npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
