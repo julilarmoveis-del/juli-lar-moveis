@@ -32,7 +32,7 @@ export const products: Product[] = [
       "/produtos/sapateira-niva-produto-03.webp",
       "/produtos/sapateira-niva-produto-04.webp",
       "/produtos/sapateira-niva-destaques.webp",
-      "/produtos/sapateira-niva-medidas-20260924.webp",
+      "/produtos/sapateira-niva-medidas-20260925.webp",
     ],
     imageLabels: [
       "Produto",
