@@ -82,7 +82,7 @@ export const products: Product[] = [
       "Outra opção de acabamento",
       "Destaques",
     ],
-    collection: "Linha Niva",
+
   },
   {
     slug: "estante-niva-73cm-3-prateleiras-2-gavetas",
@@ -122,7 +122,7 @@ export const products: Product[] = [
       "Vista adicional 3",
       "Destaques",
     ],
-    collection: "Linha Niva",
+
   },
   {
     slug: "cristaleira-niva-53cm-led-porta-vidro",
@@ -162,7 +162,7 @@ export const products: Product[] = [
       "Enquadramento do produto",
       "Destaques",
     ],
-    collection: "Linha Niva",
+
   },
   {
     slug: "penteadeira-swift-suspensa-60cm",
